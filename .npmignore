@@ -10,7 +10,6 @@ test/e2e/reports
 .gitignore
 .tern-project
 docs/
-documentation/
 gh-pages/
 static/
 test/
