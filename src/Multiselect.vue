@@ -727,7 +727,7 @@
 		display: inline-block
 	}
 
-	.custom-placeholder::after {
+	.custom-placeholder:after {
 		content: 'Tab \A to select';
 		white-space: pre;
 		position: absolute;
