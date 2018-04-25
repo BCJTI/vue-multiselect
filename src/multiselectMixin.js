@@ -65,6 +65,8 @@ import isArray from './is-array';
 export default {
 	data() {
 		return {
+			parentWrapper: null,
+			scrollableParent: null,
 			search: '',
 			isOpen: false,
 			prefferedOpenDirection: 'below',
@@ -386,6 +388,40 @@ export default {
 		},
 	},
 	methods: {
+		setWrapperPos() {
+			const { list } = this.$refs;
+			if (this.isOpen) {
+				if (!this.parentWrapper) this.parentWrapper = list.parentElement;
+				if (!this.scrollableParent) {
+					this.scrollableParent = getScrollParent(this.$el.parentNode);
+					if (this.scrollableParent) this.scrollableParent.addEventListener('scroll', this.updatePos);
+				}
+				const { top, left, bottom, width } = this.$el.getBoundingClientRect();
+				document.body.appendChild(list);
+				list.style.width = `${width}px`;
+				list.style.left = `${left}px`;
+				if (this.isAbove) {
+					list.classList.add('above');
+					list.style.bottom = `${window.innerHeight - top}px`;
+				} else {
+					list.classList.remove('above');
+					list.style.top = `${bottom}px`;
+				}
+			} else if (this.parentWrapper) {
+				this.parentWrapper.appendChild(list);
+			}
+		},
+		updatePos() {
+			if (this.isOpen) {
+				const { list } = this.$refs;
+				const { top, bottom } = this.$el.getBoundingClientRect();
+				if (this.isAbove) {
+					list.style.bottom = `${window.innerHeight - top}px`;
+				} else {
+					list.style.top = `${bottom}px`;
+				}
+			}
+		},
 		/**
 		 * Converts the internal value to the external value
 		 * @returns {Object||Array||String||Integer} returns the external value
