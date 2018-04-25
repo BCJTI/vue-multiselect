@@ -258,6 +258,9 @@
 		},
 
 		beforeDestroy() {
+			this.isOpen = false;
+			this.setWrapperPos();
+			if (this.scrollableParent) this.scrollableParent.removeEventListener('scroll', this.updatePos);
 			this.contentContainer.removeEventListener('wheel', this.scrollContent);
 		},
 
@@ -324,6 +327,7 @@
 			},
 
 			isOpen(val) {
+				this.setWrapperPos();
 				this.internalPlaceholder =
 					val && this.currentOptionLabel ? this.currentOptionLabel : this.placeholder;
 			},
