@@ -388,12 +388,25 @@ export default {
 		},
 	},
 	methods: {
+		getScrollParent(node, defaultReturn = document) {
+			const isElement = node instanceof HTMLElement;
+			const overflowY = isElement && window.getComputedStyle(node).overflowY;
+			const isScrollable = overflowY !== 'visible' && overflowY !== 'hidden';
+
+			if (!node) {
+				return null;
+			} else if (isScrollable && node.scrollHeight > node.clientHeight) {
+				return node;
+			}
+
+			return this.getScrollParent(node.parentNode, defaultReturn) || defaultReturn;
+		},
 		setWrapperPos() {
 			const { list } = this.$refs;
 			if (this.isOpen) {
 				if (!this.parentWrapper) this.parentWrapper = list.parentElement;
 				if (!this.scrollableParent) {
-					this.scrollableParent = getScrollParent(this.$el.parentNode);
+					this.scrollableParent = this.getScrollParent(this.$el.parentNode);
 					if (this.scrollableParent) this.scrollableParent.addEventListener('scroll', this.updatePos);
 				}
 				const { top, left, bottom, width } = this.$el.getBoundingClientRect();
