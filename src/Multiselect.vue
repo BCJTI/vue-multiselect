@@ -40,7 +40,7 @@
 					type="text"
 					autocomplete="off"
 					:placeholder="internalPlaceholder"
-					v-if="searchable"
+					v-if="searchable && isOpen"
 					:style="inputStyle"
 					:value="isOpen ? search : currentOptionLabel"
 					:disabled="disabled"
@@ -56,10 +56,13 @@
 					class="multiselect__input"
 			/>
 			<span
-					v-if="!searchable"
+					v-if="!searchable || !isOpen"
 					class="multiselect__single"
-					v-text="currentOptionLabel">
-
+				>
+				<slot v-if="currentOptionLabel" name="singleLabel" :option="currentOptionLabel">
+					<template>{{ currentOptionLabel }}</template>
+				</slot>
+				<template v-else>{{ internalPlaceholder }}</template>
 			</span>
 		</div>
 		<transition name="multiselect">
@@ -351,6 +354,10 @@
 		display: block;
 	}
 
+	.multiselect--disabled .multiselect__spinner {
+		background: #ededed;
+	}
+
 	.multiselect__spinner:before,
 	.multiselect__spinner:after {
 		position: absolute;
@@ -444,12 +451,12 @@
 	.multiselect__input,
 	.multiselect__single {
 		position: relative;
-		display: inline-block;
+		display: block;
 		min-height: 20px;
 		line-height: 20px;
 		border: none;
 		border-radius: 5px;
-		background: #fff;
+		background: transparent;
 		padding: 1px 0 0 5px;
 		width: calc(100%);
 		transition: border 0.1s ease;
@@ -475,8 +482,9 @@
 	}
 
 	.multiselect__single {
-		padding-left: 6px;
-		margin-bottom: 8px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.multiselect__tags-wrap {

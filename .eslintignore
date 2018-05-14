@@ -2,3 +2,4 @@ src/prism.js
 config/*.js
 *.pug
 src/
+test/
