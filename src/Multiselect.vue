@@ -340,6 +340,7 @@
 </script>
 
 <style>
+
 	fieldset[disabled] .multiselect {
 		pointer-events: none;
 	}
@@ -411,6 +412,7 @@
 		min-height: 40px;
 		text-align: left;
 		color: #35495E;
+		background: #fff;
 	}
 
 	.multiselect * {
@@ -451,7 +453,7 @@
 	.multiselect__input,
 	.multiselect__single {
 		position: relative;
-		display: block;
+		display: inline-block;
 		min-height: 20px;
 		line-height: 20px;
 		border: none;
@@ -497,7 +499,6 @@
 		padding: 8px 40px 0 8px;
 		border-radius: 5px;
 		border: 1px solid #E8E8E8;
-		background: #fff;
 	}
 
 	.multiselect__tag {
