@@ -17,6 +17,7 @@ spinner.start()
 var assetsPath = path.join(config.bundle.assetsRoot, config.bundle.assetsSubDirectory)
 shell.rm('-rf', assetsPath)
 shell.mkdir('-p', assetsPath)
+shell.echo('module.exports = {}\n').to(`${assetsPath}postcss.config.js`)
 
 webpack(webpackConfig, function (err, stats) {
   spinner.stop()
