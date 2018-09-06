@@ -1,6 +1,6 @@
 <template>
 	<div
-			:tabindex="tabindex"
+			:tabindex="searchable && isOpen ? -1 : tabindex"
 			:class="{ 'multiselect--active': isOpen, 'multiselect--disabled': disabled, 'multiselect--above': isAbove }"
 			@focus="activate()"
 			@blur="searchable ? false : deactivate()"
