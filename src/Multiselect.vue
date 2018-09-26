@@ -58,7 +58,7 @@
 			<span
 					v-if="!searchable || !isOpen"
 					class="multiselect__single"
-				>
+			>
 				<slot v-if="currentOptionLabel" name="singleLabel" :option="currentOptionLabel">
 					<template>{{ currentOptionLabel }}</template>
 				</slot>
@@ -238,7 +238,8 @@
 			tabindex: {
 				type: Number,
 				default: 0
-			}
+			},
+			selectFirst: null,
 		},
 
 		data() {
@@ -255,7 +256,7 @@
 
 			if (this.autofocus) this.activate();
 
-			if (!this.internalValue.length && this.options.length === 1) {
+			if (!this.internalValue.length && this.options.length && this.selectFirst) {
 				this.select(this.filteredOptions[0]);
 			}
 		},
