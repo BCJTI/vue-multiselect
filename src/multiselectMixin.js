@@ -565,6 +565,8 @@ export default {
 		 * @param  {Boolean} block removing
 		 */
 		select(option, key) {
+			if (this.$el) this.$el.focus();
+
 			/* istanbul ignore else */
 			if (this.blockKeys.indexOf(key) !== -1 || this.disabled || option.$isLabel || option.$isDisabled) return
 			/* istanbul ignore else */
@@ -591,8 +593,9 @@ export default {
 				/* istanbul ignore else */
 				if (this.clearOnSelect) this.search = ''
 			}
+
 			/* istanbul ignore else */
-			if (this.closeOnSelect) this.deactivate()
+			if (this.closeOnSelect) this.deactivate();
 		},
 		/**
 		 * Removes the given option from the selected options.
@@ -654,9 +657,11 @@ export default {
 			/* istanbul ignore else  */
 			if (this.searchable) {
 				if (!this.preserveSearch) this.search = ''
-				this.$nextTick(() => this.$refs.search.focus())
+				this.$nextTick(() => {
+					if (this.$refs.search) this.$refs.search.focus();
+				});
 			} else {
-				this.$el.focus()
+				if (this.$el) this.$el.focus()
 			}
 			this.$emit('open', this.id)
 		},
