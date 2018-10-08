@@ -22,6 +22,9 @@ export default {
 	},
 	computed: {
 		pointerPosition() {
+			if (this.allowEmpty) {
+				return (this.pointer + 1) * this.optionHeight
+			}
 			return this.pointer * this.optionHeight
 		},
 		visibleElements() {
@@ -40,13 +43,18 @@ export default {
 		optionHighlight(index, option) {
 			return {
 				'multiselect__option--highlight': index === this.pointer && this.showPointer,
-				'multiselect__option--selected': this.isSelected(option)
+				'multiselect__option--selected': option && this.isSelected(option)
+			}
+		},
+		deselectHighlight(index) {
+			return {
+				'deselect__option--highlight': index === this.pointer && this.showPointer,
 			}
 		},
 		addPointerElement({ key } = 'Enter') {
 			/* istanbul ignore else */
 			if (this.filteredOptions.length > 0) {
-				this.select(this.filteredOptions[this.pointer], key)
+				this.select(this.filteredOptions[this.pointer], key);
 			}
 			this.pointerReset()
 		},
@@ -64,7 +72,7 @@ export default {
 			this.pointerDirty = true
 		},
 		pointerBackward() {
-			if (this.pointer > 0) {
+			if (this.pointer > (this.allowEmpty ? -1 : 0)) {
 				this.pointer--
 				/* istanbul ignore else */
 				if (this.$refs.list.scrollTop >= this.pointerPosition) {

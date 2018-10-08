@@ -567,6 +567,13 @@ export default {
 		select(option, key) {
 			if (this.$el) this.$el.focus();
 
+			if (!option) {
+				if (this.pointer < 0 && this.allowEmpty) {
+					this.removeAll()
+				}
+				return;
+			}
+
 			/* istanbul ignore else */
 			if (this.blockKeys.indexOf(key) !== -1 || this.disabled || option.$isLabel || option.$isDisabled) return
 			/* istanbul ignore else */
@@ -578,11 +585,7 @@ export default {
 				this.search = ''
 				if (this.closeOnSelect && !this.multiple) this.deactivate()
 			} else {
-				const isSelected = this.isSelected(option)
-				if (isSelected) {
-					if (key !== 'Tab') this.removeElement(option)
-					return
-				} else if (this.multiple) {
+				if (this.multiple) {
 					this.internalValue.push(option)
 				} else {
 					this.internalValue = [option]
@@ -638,6 +641,14 @@ export default {
 			if (this.search.length === 0 && Array.isArray(this.internalValue)) {
 				this.removeElement(this.internalValue[this.internalValue.length - 1], false)
 			}
+		},
+		/**
+		 * Remove all selections.
+		 * Sets this.internalValue to []
+		 */
+		removeAll() {
+			this.internalValue = []
+			if (this.closeOnSelect && !this.multiple) this.deactivate()
 		},
 		/**
 		 * Opens the multiselect’s dropdown.

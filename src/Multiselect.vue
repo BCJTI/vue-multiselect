@@ -2,6 +2,7 @@
 	<div
 			:tabindex="searchable && isOpen ? -1 : tabindex"
 			:class="{ 'multiselect--active': isOpen, 'multiselect--disabled': disabled, 'multiselect--above': isAbove }"
+			@click="activate()"
 			@focus="activate()"
 			@blur="searchable ? false : deactivate()"
 			@keydown.self.down.prevent="pointerForward()"
@@ -79,7 +80,18 @@
 							<slot name="maxElements">Maximum of {{ max }} options selected. First remove a selected option to select another.</slot>
 						</span>
 					</li>
-					<template v-if="!max || internalValue.length < max">
+					<template v-else>
+						<li v-if="allowEmpty" class="multiselect__element">
+							<span
+									class="deselect__option"
+									:class="deselectHighlight(-1)"
+									@click.stop="select(null)"
+									@mouseenter.self="pointerSet(-1)"
+							>
+								<span>{{ deselectLabelText }}</span>
+							</span>
+						</li>
+
 						<li class="multiselect__element" v-for="(option, index) of filteredOptions" :key="index">
 							<span
 									v-if="!(option && (option.$isLabel || option.$isDisabled))"
@@ -88,7 +100,6 @@
 									@mouseenter.self="pointerSet(index)"
 									:data-select="option && option.isTag ? tagPlaceholder : selectLabelText"
 									:data-selected="selectedLabelText"
-									:data-deselect="deselectLabelText"
 									class="multiselect__option">
 								<slot name="option" :option="option" :search="search">
 									<span>{{ getOptionLabel(option) }}</span>
@@ -160,7 +171,7 @@
 			 */
 			deselectLabel: {
 				type: String,
-				default: 'Press enter to remove'
+				default: 'None'
 			},
 			/**
 			 * Decide whether to show pointer labels
@@ -274,15 +285,15 @@
 					? this.internalValue.slice(0, this.limit)
 					: []
 			},
-			deselectLabelText() {
-				return this.showLabels
-					? this.deselectLabel
-					: ''
-			},
 			selectLabelText() {
 				return this.showLabels
 					? this.selectLabel
 					: ''
+			},
+			deselectLabelText() {
+				return this.showLabels
+					? this.deselectLabel
+					: '-'
 			},
 			selectedLabelText() {
 				return this.showLabels
@@ -646,6 +657,41 @@
 
 	.multiselect__element {
 		display: block;
+	}
+
+	.deselect__option {
+		display: block;
+		padding: 12px;
+		min-height: 40px;
+		line-height: 16px;
+		text-decoration: none;
+		text-transform: none;
+		vertical-align: middle;
+		position: relative;
+		cursor: pointer;
+		white-space: nowrap;
+		opacity: .8;
+	}
+
+	.deselect__option:after {
+		top: 0;
+		right: 0;
+		position: absolute;
+		line-height: 40px;
+		padding-right: 12px;
+		padding-left: 20px;
+	}
+
+	.deselect__option--highlight {
+		background: #41B883;
+		outline: none;
+		color: white;
+	}
+
+	.deselect__option--highlight:after {
+		content: attr(data-select);
+		background: #41B883;
+		color: white;
 	}
 
 	.multiselect__option {
