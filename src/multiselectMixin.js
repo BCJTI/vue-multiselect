@@ -370,6 +370,15 @@ export default {
 				: this.internalValue.length
 					? this.getOptionLabel(this.internalValue[0])
 					: this.searchable ? '' : this.placeholder
+		},
+		isAbove() {
+			if (this.openDirection === 'above' || this.openDirection === 'top') {
+				return true
+			} else if (this.openDirection === 'below' || this.openDirection === 'bottom') {
+				return false
+			} else {
+				return this.prefferedOpenDirection === 'above'
+			}
 		}
 	},
 	watch: {
@@ -425,13 +434,17 @@ export default {
 			}
 		},
 		updatePos() {
+			this.adjustPosition();
+
 			if (this.isOpen) {
 				const { list } = this.$refs;
 				const { top, bottom } = this.$el.getBoundingClientRect();
 				if (this.isAbove) {
+					list.style.top = '';
 					list.style.bottom = `${window.innerHeight - top}px`;
 				} else {
 					list.style.top = `${bottom}px`;
+					list.style.bottom = '';
 				}
 			}
 		},
