@@ -401,6 +401,7 @@ export default {
 
 			return this.getScrollParent(node.parentNode, defaultReturn) || defaultReturn;
 		},
+
 		setWrapperPos() {
 			const { list } = this.$refs;
 			if (this.isOpen) {
@@ -415,22 +416,27 @@ export default {
 				list.style.left = `${left}px`;
 				if (this.isAbove) {
 					list.classList.add('above');
+					list.style.top = 'auto';
 					list.style.bottom = `${window.innerHeight - top}px`;
 				} else {
 					list.classList.remove('above');
+					list.style.bottom = 'auto';
 					list.style.top = `${bottom}px`;
 				}
 			} else if (this.parentWrapper) {
 				this.parentWrapper.appendChild(list);
 			}
 		},
+
 		updatePos() {
 			if (this.isOpen) {
 				const { list } = this.$refs;
 				const { top, bottom } = this.$el.getBoundingClientRect();
 				if (this.isAbove) {
+					list.style.top = 'auto';
 					list.style.bottom = `${window.innerHeight - top}px`;
 				} else {
+					list.style.bottom = 'auto';
 					list.style.top = `${bottom}px`;
 				}
 			}
