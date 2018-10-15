@@ -651,6 +651,14 @@
 		border-top: 1px solid #E8E8E8;
 	}
 
+	.above {
+		bottom: 100%;
+		border-bottom-left-radius: 0;
+		border-bottom-right-radius: 0;
+		border-bottom: none;
+		border-top: 1px solid #E8E8E8;
+	}
+
 	.multiselect__content::webkit-scrollbar {
 		display: none;
 	}
