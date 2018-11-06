@@ -660,8 +660,14 @@ export default {
 		 * Sets this.internalValue to []
 		 */
 		removeAll() {
-			this.internalValue = []
-			if (this.closeOnSelect && !this.multiple) this.deactivate()
+			this.internalValue.forEach(v => {
+				this.$emit('remove', deepClone(v), this.id);
+			});
+
+			this.$emit('input', this.getValue(), this.id);
+
+			this.internalValue = [];
+			if (this.closeOnSelect && !this.multiple) this.deactivate();
 		},
 		/**
 		 * Opens the multiselect’s dropdown.
