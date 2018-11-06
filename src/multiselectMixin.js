@@ -660,13 +660,14 @@ export default {
 		 * Sets this.internalValue to []
 		 */
 		removeAll() {
-			this.internalValue.forEach(v => {
+			const vals = deepClone(this.internalValue);
+			this.internalValue = [];
+
+			vals.forEach(v => {
 				this.$emit('remove', deepClone(v), this.id);
 			});
 
 			this.$emit('input', this.getValue(), this.id);
-
-			this.internalValue = [];
 			if (this.closeOnSelect && !this.multiple) this.deactivate();
 		},
 		/**
