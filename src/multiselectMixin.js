@@ -370,15 +370,6 @@ export default {
 				: this.internalValue.length
 					? this.getOptionLabel(this.internalValue[0])
 					: this.searchable ? '' : this.placeholder
-		},
-		isAbove() {
-			if (this.openDirection === 'above' || this.openDirection === 'top') {
-				return true
-			} else if (this.openDirection === 'below' || this.openDirection === 'bottom') {
-				return false
-			} else {
-				return this.prefferedOpenDirection === 'above'
-			}
 		}
 	},
 	watch: {
@@ -410,6 +401,7 @@ export default {
 
 			return this.getScrollParent(node.parentNode, defaultReturn) || defaultReturn;
 		},
+
 		setWrapperPos() {
 			const { list } = this.$refs;
 			if (this.isOpen) {
@@ -424,27 +416,28 @@ export default {
 				list.style.left = `${left}px`;
 				if (this.isAbove) {
 					list.classList.add('above');
+					list.style.top = 'auto';
 					list.style.bottom = `${window.innerHeight - top}px`;
 				} else {
 					list.classList.remove('above');
+					list.style.bottom = 'auto';
 					list.style.top = `${bottom}px`;
 				}
 			} else if (this.parentWrapper) {
 				this.parentWrapper.appendChild(list);
 			}
 		},
-		updatePos() {
-			this.adjustPosition();
 
+		updatePos() {
 			if (this.isOpen) {
 				const { list } = this.$refs;
 				const { top, bottom } = this.$el.getBoundingClientRect();
 				if (this.isAbove) {
-					list.style.top = '';
+					list.style.top = 'auto';
 					list.style.bottom = `${window.innerHeight - top}px`;
 				} else {
+					list.style.bottom = 'auto';
 					list.style.top = `${bottom}px`;
-					list.style.bottom = '';
 				}
 			}
 		},
