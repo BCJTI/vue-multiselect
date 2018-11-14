@@ -2,6 +2,8 @@
 	<div
 			:tabindex="searchable && isOpen ? -1 : tabindex"
 			:class="{ 'multiselect--active': isOpen, 'multiselect--disabled': disabled, 'multiselect--above': isAbove }"
+			:name="name"
+			:id="id"
 			@click="activate()"
 			@focus="activate()"
 			@blur="searchable ? false : deactivate()"
@@ -9,7 +11,8 @@
 			@keydown.self.up.prevent="pointerBackward()"
 			@keydown.enter.tab.stop.self="addPointerElement($event)"
 			@keyup.esc="deactivate()"
-			class="multiselect">
+			class="multiselect"
+	>
 		<slot name="carret" v-if="placeholder === internalPlaceholder">
 			<div @mousedown.prevent.stop="toggle()" class="multiselect__select"></div>
 		</slot>
@@ -36,8 +39,8 @@
 			</transition>
 			<input
 					ref="search"
-					:name="name"
-					:id="id"
+					:name="name + '-input'"
+					:id="id + '-input'"
 					type="text"
 					autocomplete="off"
 					:placeholder="internalPlaceholder"
