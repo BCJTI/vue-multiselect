@@ -314,15 +314,6 @@
 					? { 'display': 'inline-block' }
 					: { 'display': 'block' }
 			},
-			isAbove() {
-				if (this.openDirection === 'above' || this.openDirection === 'top') {
-					return true
-				} else if (this.openDirection === 'below' || this.openDirection === 'bottom') {
-					return false
-				} else {
-					return this.prefferedOpenDirection === 'above'
-				}
-			}
 		},
 
 		methods: {
