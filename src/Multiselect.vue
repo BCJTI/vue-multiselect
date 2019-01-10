@@ -310,7 +310,7 @@
 				}
 			},
 			contentStyle() {
-				return this.options.length
+				return this.options && this.options.length
 					? { 'display': 'inline-block' }
 					: { 'display': 'block' }
 			},
