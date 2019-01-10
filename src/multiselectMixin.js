@@ -327,7 +327,7 @@ export default {
 			const search = this.search || ''
 			const normalizedSearch = search.toLowerCase().trim()
 
-			let options = this.options.concat()
+			let options = (this.options || []).concat()
 
 			/* istanbul ignore else */
 			if (this.internalSearch) {
