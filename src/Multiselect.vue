@@ -279,7 +279,7 @@
 			this.isOpen = false;
 			this.setWrapperPos();
 			if (this.scrollableParent) this.scrollableParent.removeEventListener('scroll', this.updatePos);
-			this.contentContainer.removeEventListener('wheel', this.scrollContent);
+			if (this.contentContainer) this.contentContainer.removeEventListener('wheel', this.scrollContent);
 		},
 
 		computed: {
