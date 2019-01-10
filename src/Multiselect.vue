@@ -265,8 +265,8 @@
 		},
 
 		mounted() {
-			this.contentContainer = this.$el.querySelector('.multiselect__content-wrapper');
-			this.contentContainer.addEventListener('wheel', this.scrollContent);
+			this.contentContainer = this.$el ? this.$el.querySelector('.multiselect__content-wrapper') : null;
+			if (this.contentContainer) this.contentContainer.addEventListener('wheel', this.scrollContent);
 
 			if (this.autofocus) this.activate();
 
