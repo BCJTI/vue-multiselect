@@ -411,6 +411,12 @@ export default {
 			return this.getScrollParent(node.parentNode, defaultReturn) || defaultReturn;
 		},
 
+		getFullscreenElement(){
+			const fullscreen = (document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+
+			return fullscreen || document.body;
+		},
+
 		setWrapperPos() {
 			const { list } = this.$refs;
 			if (this.isOpen) {
@@ -420,7 +426,10 @@ export default {
 					if (this.scrollableParent) this.scrollableParent.addEventListener('scroll', this.updatePos);
 				}
 				const { top, left, bottom, width } = this.$el.getBoundingClientRect();
-				document.body.appendChild(list);
+
+				const fullscreenEl = this.getFullscreenElement();
+				fullscreenEl.appendChild(list);
+
 				list.style.width = `${width}px`;
 				list.style.left = `${left}px`;
 				if (this.isAbove) {
