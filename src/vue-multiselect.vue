@@ -17,7 +17,7 @@
 			@blur="searchable ? false : deactivate()"
 		-->
 		<slot name="carret" v-if="placeholder === internalPlaceholder">
-			<div @mousedown.prevent.stop="toggle()" class="multiselect__select"></div>
+			<div @mousedown.prevent="toggle()" class="multiselect__select"></div>
 		</slot>
 		<slot name="clear" :search="search"></slot>
 		<div ref="tags" class="multiselect__tags" :class="{'custom-placeholder': placeholder !== internalPlaceholder}">
