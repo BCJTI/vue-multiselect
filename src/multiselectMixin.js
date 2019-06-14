@@ -367,7 +367,7 @@ export default {
 			if (this.trackBy) {
 				return this.internalValue.map(element => element[this.trackBy]);
 			}
-				return this.internalValue;
+			return this.internalValue;
 		},
 		optionKeys() {
 			const options = this.groupValues ? this.flatAndStrip(this.options) : this.options;
@@ -383,10 +383,11 @@ export default {
 		isAbove() {
 			if (this.openDirection === 'above' || this.openDirection === 'top') {
 				return true;
-			} if (this.openDirection === 'below' || this.openDirection === 'bottom') {
+			}
+			if (this.openDirection === 'below' || this.openDirection === 'bottom') {
 				return false;
 			}
-				return this.prefferedOpenDirection === 'above';
+			return this.prefferedOpenDirection === 'above';
 		},
 	},
 	watch: {
@@ -412,7 +413,8 @@ export default {
 
 			if (!node) {
 				return null;
-			} if (isScrollable && node.scrollHeight > node.clientHeight) {
+			}
+			if (isScrollable && node.scrollHeight > node.clientHeight) {
 				return node;
 			}
 
@@ -725,6 +727,7 @@ export default {
 			if (!this.isOpen) return;
 
 			this.isOpen = false;
+
 			/* istanbul ignore else  */
 			if (this.searchable) {
 				this.$refs.search.blur();
@@ -775,5 +778,7 @@ export default {
 			this.pointerSet(index);
 			this.select(option);
 		},
+
 	},
+
 };

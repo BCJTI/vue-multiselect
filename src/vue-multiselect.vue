@@ -4,7 +4,7 @@
 			:class="{ 'multiselect--active': isOpen, 'multiselect--disabled': disabled, 'multiselect--above': isAbove }"
 			:name="name"
 			:id="id"
-			@click.stop="activate()"
+			@click="activate()"
 			@focus="activate()"
 			@keydown.self.down.prevent="pointerForward()"
 			@keydown.self.up.prevent="pointerBackward()"
@@ -92,7 +92,7 @@
 							<span
 									v-if="!(option && (option.$isLabel || option.$isDisabled))"
 									:class="optionHighlight(index, option)"
-									@click.stop="select(option)"
+									@mousedown.stop="select(option)"
 									@mouseenter.self="pointerSet(index)"
 									:data-select="option && option.isTag ? tagPlaceholder : selectLabelText"
 									:data-selected="selectedLabelText"
@@ -267,14 +267,14 @@
 				this.select(this.filteredOptions[0]);
 			}
 
-			document.addEventListener('click', this.deactivate);
+			document.addEventListener('mousedown', this.close);
 		},
 
 		beforeDestroy() {
 			this.isOpen = false;
 			this.setWrapperPos();
 
-			document.removeEventListener('click', this.deactivate);
+			document.removeEventListener('mousedown', this.close);
 			if (this.scrollableParent) this.scrollableParent.removeEventListener('scroll', this.updatePos);
 			if (this.contentContainer) this.contentContainer.removeEventListener('wheel', this.scrollContent);
 		},
@@ -328,6 +328,10 @@
 		},
 
 		methods: {
+
+			close() {
+				this.isOpen = false;
+			},
 
 			scrollContent() {
 				if (!this.loading && this.contentContainer) {
