@@ -4,17 +4,16 @@
  * @type {Object}
  */
 export default function deepClone(obj) {
-	if (Array.isArray(obj)) {
-		return obj.map(deepClone)
-	} else if (obj && typeof obj === 'object') {
-		var cloned = {}
-		var keys = Object.keys(obj)
-		for (var i = 0, l = keys.length; i < l; i++) {
-			var key = keys[i]
-			cloned[key] = deepClone(obj[key])
-		}
-		return cloned
-	} else {
-		return obj
-	}
+  if (Array.isArray(obj)) {
+    return obj.map(deepClone);
+  } if (obj && typeof obj === 'object') {
+    const cloned = {};
+    const keys = Object.keys(obj);
+    for (let i = 0, l = keys.length; i < l; i++) {
+      const key = keys[i];
+      cloned[key] = deepClone(obj[key]);
+    }
+    return cloned;
+  }
+  return obj;
 }
