@@ -4,15 +4,18 @@
 			:class="{ 'multiselect--active': isOpen, 'multiselect--disabled': disabled, 'multiselect--above': isAbove }"
 			:name="name"
 			:id="id"
-			@click="activate()"
+			@click.stop="activate()"
 			@focus="activate()"
-			@blur="searchable ? false : deactivate()"
 			@keydown.self.down.prevent="pointerForward()"
 			@keydown.self.up.prevent="pointerBackward()"
 			@keydown.enter.tab.stop.self="addPointerElement($event)"
 			@keyup.esc="deactivate()"
 			class="multiselect"
 	>
+		<!--
+			Quando corrigir isso, remover o stopPropagation do click
+			@blur="searchable ? false : deactivate()"
+		-->
 		<slot name="carret" v-if="placeholder === internalPlaceholder">
 			<div @mousedown.prevent.stop="toggle()" class="multiselect__select"></div>
 		</slot>
@@ -53,7 +56,6 @@
 					:tabindex="tabindex"
 					@input="updateSearch($event.target.value)"
 					@focus.prevent="activate()"
-					@blur.prevent="deactivate()"
 					@keyup.esc="deactivate()"
 					@keydown.down.prevent="pointerForward()"
 					@keydown.up.prevent="pointerBackward()"
@@ -86,17 +88,6 @@
 						</span>
 					</li>
 					<template v-else>
-						<li v-if="allowEmpty" class="multiselect__element">
-							<span
-									class="deselect__option"
-									:class="deselectHighlight(-1)"
-									@click.stop="select(null)"
-									@mouseenter.self="pointerSet(-1)"
-							>
-								<span>{{ deselectLabelText }}</span>
-							</span>
-						</li>
-
 						<li class="multiselect__element" v-for="(option, index) of filteredOptions" :key="index">
 							<span
 									v-if="!(option && (option.$isLabel || option.$isDisabled))"
@@ -133,233 +124,235 @@
 </template>
 
 <script>
-  import multiselectMixin from './multiselectMixin';
-  import pointerMixin from './pointerMixin';
+	import multiselectMixin from './multiselectMixin';
+	import pointerMixin from './pointerMixin';
 
-  export default {
+	export default {
+		name: 'vue-multiselect',
+		mixins: [multiselectMixin, pointerMixin],
 
-    name: 'vue-multiselect',
+		props: {
 
-    mixins: [multiselectMixin, pointerMixin],
+			/**
+			 * name attribute to match optional label element
+			 * @default ''
+			 * @type {String}
+			 */
+			name: {
+				type: String,
+				default: '',
+			},
+			/**
+			 * String to show when pointing to an option
+			 * @default 'Press enter to select'
+			 * @type {String}
+			 */
+			selectLabel: {
+				type: String,
+				default: 'Press enter to select',
+			},
+			/**
+			 * String to show next to selected option
+			 * @default 'Selected'
+			 * @type {String}
+			 */
+			selectedLabel: {
+				type: String,
+				default: 'Selected',
+			},
+			/**
+			 * String to show when pointing to an alredy selected option
+			 * @default 'Press enter to remove'
+			 * @type {String}
+			 */
+			deselectLabel: {
+				type: String,
+				default: 'None',
+			},
+			/**
+			 * Decide whether to show pointer labels
+			 * @default true
+			 * @type {Boolean}
+			 */
+			showLabels: {
+				type: Boolean,
+				default: true,
+			},
+			/**
+			 * Limit the display of selected options. The rest will be hidden within the limitText string.
+			 * @default 99999
+			 * @type {Integer}
+			 */
+			limit: {
+				type: Number,
+				default: 99999,
+			},
+			/**
+			 * Sets maxHeight style value of the dropdown
+			 * @default 300
+			 * @type {Integer}
+			 */
+			maxHeight: {
+				type: Number,
+				default: 300,
+			},
+			/**
+			 * Function that process the message shown when selected
+			 * elements pass the defined limit.
+			 * @default 'and * more'
+			 * @param {Int} count Number of elements more than limit
+			 * @type {Function}
+			 */
+			limitText: {
+				type: Function,
+				default: count => `and ${count} more`,
+			},
+			/**
+			 * Set true to trigger the loading spinner.
+			 * @default False
+			 * @type {Boolean}
+			 */
+			loading: {
+				type: Boolean,
+				default: false,
+			},
+			/**
+			 * Disables the multiselect if true.
+			 * @default false
+			 * @type {Boolean}
+			 */
+			disabled: {
+				type: Boolean,
+				default: false,
+			},
+			/**
+			 * Fixed opening direction
+			 * @default ''
+			 * @type {String}
+			 */
+			openDirection: {
+				type: String,
+				default: '',
+			},
+			showNoResults: {
+				type: Boolean,
+				default: true,
+			},
+			autofocus: {
+				type: Boolean,
+				default: false,
+			},
+			tabindex: {
+				type: Number,
+				default: 0,
+			},
+			selectFirst: null,
+		},
 
-    props: {
+		data() {
+			return {
+				internalValue: this.getInternalValue(this.value),
+				contentContainer: null,
+				internalPlaceholder: this.placeholder,
+			};
+		},
 
-      /**
-       * name attribute to match optional label element
-       * @default ''
-       * @type {String}
-       */
-      name: {
-        type: String,
-        default: '',
-      },
-      /**
-       * String to show when pointing to an option
-       * @default 'Press enter to select'
-       * @type {String}
-       */
-      selectLabel: {
-        type: String,
-        default: 'Press enter to select',
-      },
-      /**
-       * String to show next to selected option
-       * @default 'Selected'
-       * @type {String}
-       */
-      selectedLabel: {
-        type: String,
-        default: 'Selected',
-      },
-      /**
-       * String to show when pointing to an alredy selected option
-       * @default 'Press enter to remove'
-       * @type {String}
-       */
-      deselectLabel: {
-        type: String,
-        default: 'None',
-      },
-      /**
-       * Decide whether to show pointer labels
-       * @default true
-       * @type {Boolean}
-       */
-      showLabels: {
-        type: Boolean,
-        default: true,
-      },
-      /**
-       * Limit the display of selected options. The rest will be hidden within the limitText string.
-       * @default 99999
-       * @type {Integer}
-       */
-      limit: {
-        type: Number,
-        default: 99999,
-      },
-      /**
-       * Sets maxHeight style value of the dropdown
-       * @default 300
-       * @type {Integer}
-       */
-      maxHeight: {
-        type: Number,
-        default: 300,
-      },
-      /**
-       * Function that process the message shown when selected
-       * elements pass the defined limit.
-       * @default 'and * more'
-       * @param {Int} count Number of elements more than limit
-       * @type {Function}
-       */
-      limitText: {
-        type: Function,
-        default: count => `and ${count} more`,
-      },
-      /**
-       * Set true to trigger the loading spinner.
-       * @default False
-       * @type {Boolean}
-       */
-      loading: {
-        type: Boolean,
-        default: false,
-      },
-      /**
-       * Disables the multiselect if true.
-       * @default false
-       * @type {Boolean}
-       */
-      disabled: {
-        type: Boolean,
-        default: false,
-      },
-      /**
-       * Fixed opening direction
-       * @default ''
-       * @type {String}
-       */
-      openDirection: {
-        type: String,
-        default: '',
-      },
-      showNoResults: {
-        type: Boolean,
-        default: true,
-      },
-      autofocus: {
-        type: Boolean,
-        default: false,
-      },
-      tabindex: {
-        type: Number,
-        default: 0,
-      },
-      selectFirst: null,
-    },
+		mounted() {
+			this.contentContainer = this.$el ? this.$el.querySelector('.multiselect__content-wrapper') : null;
+			if (this.contentContainer) this.contentContainer.addEventListener('wheel', this.scrollContent);
 
-    data() {
-      return {
-        internalValue: this.getInternalValue(this.value),
-        contentContainer: null,
-        internalPlaceholder: this.placeholder,
-      };
-    },
+			if (this.autofocus) this.activate();
 
-    mounted() {
-      this.contentContainer = this.$el ? this.$el.querySelector('.multiselect__content-wrapper') : null;
-      if (this.contentContainer) this.contentContainer.addEventListener('wheel', this.scrollContent);
+			if (!this.internalValue.length && this.options.length && this.selectFirst) {
+				this.select(this.filteredOptions[0]);
+			}
 
-      if (this.autofocus) this.activate();
+			document.addEventListener('click', this.deactivate);
+		},
 
-      if (!this.internalValue.length && this.options.length && this.selectFirst) {
-        this.select(this.filteredOptions[0]);
-      }
-    },
+		beforeDestroy() {
+			this.isOpen = false;
+			this.setWrapperPos();
 
-    beforeDestroy() {
-      this.isOpen = false;
-      this.setWrapperPos();
-      if (this.scrollableParent) this.scrollableParent.removeEventListener('scroll', this.updatePos);
-      if (this.contentContainer) this.contentContainer.removeEventListener('wheel', this.scrollContent);
-    },
+			document.removeEventListener('click', this.deactivate);
+			if (this.scrollableParent) this.scrollableParent.removeEventListener('scroll', this.updatePos);
+			if (this.contentContainer) this.contentContainer.removeEventListener('wheel', this.scrollContent);
+		},
 
-    computed: {
-      visibleValue() {
-        return this.multiple
-          ? this.internalValue.slice(0, this.limit)
-          : [];
-      },
-      selectLabelText() {
-        return this.showLabels
-          ? this.selectLabel
-          : '';
-      },
-      deselectLabelText() {
-        return this.showLabels
-          ? this.deselectLabel
-          : '-';
-      },
-      selectedLabelText() {
-        return this.showLabels
-          ? this.selectedLabel
-          : '';
-      },
-      inputStyle() {
-        if (this.multiple && this.value && this.value.length) {
-          // Hide input by setting the width to 0 allowing it to receive focus
-          return this.isOpen ? { width: 'auto' } : {
-            width: '0',
-            position: 'absolute',
-          };
-        }
+		computed: {
+			visibleValue() {
+				return this.multiple
+					? this.internalValue.slice(0, this.limit)
+					: [];
+			},
+			selectLabelText() {
+				return this.showLabels
+					? this.selectLabel
+					: '';
+			},
+			deselectLabelText() {
+				return this.showLabels
+					? this.deselectLabel
+					: '-';
+			},
+			selectedLabelText() {
+				return this.showLabels
+					? this.selectedLabel
+					: '';
+			},
+			inputStyle() {
+				if (this.multiple && this.value && this.value.length) {
+					// Hide input by setting the width to 0 allowing it to receive focus
+					return this.isOpen ? { 'width': 'auto' } : {
+						'width': '0',
+						'position': 'absolute',
+					};
+				}
 
-        return undefined;
-      },
-      contentStyle() {
-        return this.options && this.options.length
-          ? { display: 'inline-block' }
-          : { display: 'block' };
-      },
-      isAbove() {
-        if (this.openDirection === 'above' || this.openDirection === 'top') {
-          return true;
-        }
-        if (this.openDirection === 'below' || this.openDirection === 'bottom') {
-          return false;
-        }
-        return this.prefferedOpenDirection === 'above';
-      },
-    },
+				return undefined;
+			},
+			contentStyle() {
+				return this.options && this.options.length
+					? { 'display': 'inline-block' }
+					: { 'display': 'block' };
+			},
+			isAbove() {
+				if (this.openDirection === 'above' || this.openDirection === 'top') {
+					return true;
+				}
+				if (this.openDirection === 'below' || this.openDirection === 'bottom') {
+					return false;
+				}
+				return this.prefferedOpenDirection === 'above';
+			},
+		},
 
-    methods: {
+		methods: {
 
-      scrollContent() {
-        if (!this.loading && this.contentContainer) {
-          const content = this.contentContainer.querySelector('.multiselect__content');
-          const containerHeight = this.contentContainer.offsetHeight;
-          const height = content.offsetHeight;
-          const { scrollTop } = this.contentContainer;
-          this.$emit('scrollEnd', scrollTop + containerHeight >= height);
-        }
-      },
+			scrollContent() {
+				if (!this.loading && this.contentContainer) {
+					const content = this.contentContainer.querySelector('.multiselect__content');
+					const containerHeight = this.contentContainer.offsetHeight;
+					const height = content.offsetHeight;
+					const scrollTop = this.contentContainer.scrollTop;
+					this.$emit('scrollEnd', scrollTop + containerHeight >= height);
+				}
+			},
 
-    },
+		},
 
-    watch: {
-      options() {
-        this.internalValue = this.getInternalValue(this.value);
-      },
+		watch: {
+			options() {
+				this.internalValue = this.getInternalValue(this.value);
+			},
 
-      isOpen(val) {
-        this.setWrapperPos();
-        this.internalPlaceholder = val && this.currentOptionLabel ? this.currentOptionLabel : this.placeholder;
-      },
-    },
+			isOpen(val) {
+				this.setWrapperPos();
+				this.internalPlaceholder = val && this.currentOptionLabel ? this.currentOptionLabel : this.placeholder;
+			},
+		},
 
-  };
+	};
 </script>
 
 <style>
