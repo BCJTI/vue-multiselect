@@ -57,6 +57,7 @@
 					@input="updateSearch($event.target.value)"
 					@focus.prevent="activate()"
 					@keyup.esc="deactivate()"
+					@keyup.tab="deactivate()"
 					@keydown.down.prevent="pointerForward()"
 					@keydown.up.prevent="pointerBackward()"
 					@keydown.enter.prevent.stop.self="addPointerElement($event)"
