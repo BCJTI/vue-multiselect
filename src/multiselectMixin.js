@@ -698,7 +698,8 @@ export default {
 		 * Opens the multiselect’s dropdown.
 		 * Sets this.isOpen to TRUE
 		 */
-		activate() {
+		activate(evt) {
+			if (evt) evt.stopPropagation();
 			/* istanbul ignore else */
 			if (this.isOpen || this.disabled) return;
 
@@ -729,11 +730,11 @@ export default {
 			this.isOpen = false;
 
 			/* istanbul ignore else  */
-			if (this.searchable) {
-				this.$refs.search.blur();
-			} else {
-				this.$el.blur();
-			}
+			// if (this.searchable) {
+			// 	this.$refs.search.blur();
+			// } else {
+			// 	this.$el.blur();
+			// }
 			if (!this.preserveSearch) this.search = '';
 			this.$emit('close', this.getValue(), this.id);
 		},

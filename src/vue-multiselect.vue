@@ -5,11 +5,11 @@
 			:name="name"
 			:id="id"
 			@click="activate()"
-			@focus="activate()"
 			@keydown.self.down.prevent="pointerForward()"
 			@keydown.self.up.prevent="pointerBackward()"
-			@keydown.enter.tab.stop.self="addPointerElement($event)"
-			@keyup.esc="deactivate()"
+			@keydown.enter.stop.self="addPointerElement($event)"
+			@keydown.space="activate($event)"
+			@keyup.tab.esc="deactivate()"
 			class="multiselect"
 	>
 		<!--
