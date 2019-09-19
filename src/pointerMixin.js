@@ -59,7 +59,11 @@ export default {
 			this.pointerReset();
 		},
 		pointerForward() {
-			if (!this.isOpen) return;
+			if (!this.isOpen) {
+				this.activate();
+				this.$nextTick(() => this.pointerForward());
+				return;
+			}
 
 			/* istanbul ignore else */
 			if (this.pointer < this.filteredOptions.length - 1) {
@@ -74,7 +78,11 @@ export default {
 			this.pointerDirty = true;
 		},
 		pointerBackward() {
-			if (!this.isOpen) return;
+			if (!this.isOpen) {
+				this.activate();
+				this.$nextTick(() => this.pointerBackward());
+				return;
+			}
 
 			if (this.pointer > (this.allowEmpty ? -1 : 0)) {
 				this.pointer--;
@@ -84,9 +92,9 @@ export default {
 				}
 				/* istanbul ignore else */
 				if (this.filteredOptions[this.pointer].$isLabel) this.pointerBackward();
-			} else {
+			} else if (this.filteredOptions[0].$isLabel) {
 				/* istanbul ignore else */
-				if (this.filteredOptions[0].$isLabel) this.pointerForward();
+				this.pointerForward();
 			}
 			this.pointerDirty = true;
 		},

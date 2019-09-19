@@ -74,6 +74,8 @@ export default {
 			internalValue: this.value || this.value === 0
 				? deepClone(Array.isArray(this.value) ? this.value : [this.value])
 				: [],
+
+			updatePosTimeout: null,
 		};
 	},
 	props: {
@@ -375,10 +377,10 @@ export default {
 		},
 		currentOptionLabel() {
 			return this.multiple
-				? this.searchable ? '' : this.placeholder
+				? null
 				: this.internalValue.length
 					? this.getOptionLabel(this.internalValue[0])
-					: this.searchable ? '' : this.placeholder;
+					: null;
 		},
 		isAbove() {
 			if (this.openDirection === 'above' || this.openDirection === 'top') {
@@ -388,6 +390,14 @@ export default {
 				return false;
 			}
 			return this.prefferedOpenDirection === 'above';
+		},
+
+		selectWidth() {
+			if (this.$el) {
+				return this.$el.offsetWidth + 'px';
+			}
+
+			return '100%';
 		},
 	},
 	watch: {
@@ -433,44 +443,71 @@ export default {
 
 		setWrapperPos() {
 			const { list } = this.$refs;
+
+			this.updatePos();
+
 			if (this.isOpen) {
 				if (!this.parentWrapper) this.parentWrapper = list.parentElement;
 				if (!this.scrollableParent) {
 					this.scrollableParent = this.getScrollParent(this.$el.parentNode);
 					if (this.scrollableParent) this.scrollableParent.addEventListener('scroll', this.updatePos);
 				}
-				const { top, left, bottom, width } = this.$el.getBoundingClientRect();
-
+				// const { top, left, width, height } = this.$el.getBoundingClientRect();
+				//
 				const fullscreenEl = this.getFullscreenElement();
 				fullscreenEl.appendChild(list);
+				//
+				// list.style.width = `${width}px`;
+				// list.style.left = `${left}px`;
+				// if (this.isAbove) {
+				// 	list.classList.add('above');
+				// 	list.style.top = 'auto';
+				// 	console.log(this.searchable);
+				// 	list.style.bottom = this.searchable
+				// 		? `${window.innerHeight - top + height}px`
+				// 		: `${window.innerHeight - top}px`;
+				// } else {
+				// 	list.classList.remove('above');
+				// 	list.style.bottom = 'auto';
+				// 	list.style.top = `${top + height}px`;
+				// }
 
-				list.style.width = `${width}px`;
-				list.style.left = `${left}px`;
-				if (this.isAbove) {
-					list.classList.add('above');
-					list.style.top = 'auto';
-					list.style.bottom = `${window.innerHeight - top}px`;
-				} else {
-					list.classList.remove('above');
-					list.style.bottom = 'auto';
-					list.style.top = `${bottom}px`;
-				}
-			} else if (this.parentWrapper) {
+				if (this.searchable) {
+					if (!this.preserveSearch) this.search = '';
+					this.$nextTick(() => {
+						if (this.$refs.search) this.$refs.search.focus();
+					});
+				} else if (this.$el) this.$el.focus();
+			} else if (this.parentWrapper && list) {
 				this.parentWrapper.appendChild(list);
 			}
 		},
 
 		updatePos() {
 			if (this.isOpen) {
-				const { list } = this.$refs;
-				const { top, bottom } = this.$el.getBoundingClientRect();
-				if (this.isAbove) {
-					list.style.top = 'auto';
-					list.style.bottom = `${window.innerHeight - top}px`;
-				} else {
-					list.style.bottom = 'auto';
-					list.style.top = `${bottom}px`;
-				}
+				if (this.updatePosTimeout) clearTimeout(this.updatePosTimeout);
+
+				this.updatePosTimeout = setTimeout(() => {
+					const { list } = this.$refs;
+					const { top, bottom, left, width } = this.$el.getBoundingClientRect();
+
+					list.style.width = `${width}px`;
+					list.style.left = `${left}px`;
+
+					if (this.isAbove) {
+						list.classList.add('above');
+						list.style.top = 'auto';
+						list.style.bottom = this.searchable
+							? `${window.innerHeight - bottom}px`
+							: `${window.innerHeight - top}px`;
+					} else {
+						list.classList.remove('above');
+						list.style.bottom = 'auto';
+						list.style.top = this.searchable
+							? `${top}px`
+							: `${bottom}px`;
+					}
+				}, 0);
 			}
 		},
 		/**
@@ -534,13 +571,6 @@ export default {
 			)(options);
 		},
 		/**
-		 * Updates the search value
-		 * @param  {String}
-		 */
-		updateSearch(query) {
-			this.search = query;
-		},
-		/**
 		 * Finds out if the given query is already present
 		 * in the available options
 		 * @param  {String}
@@ -602,6 +632,7 @@ export default {
 		 * @param  {Boolean} block removing
 		 */
 		select(option, key) {
+			console.log('select', option, key);
 			if (this.$el) this.$el.focus();
 
 			if (!option) {
@@ -627,6 +658,7 @@ export default {
 				} else {
 					this.internalValue = [option];
 				}
+				console.log('emited');
 				this.$emit('select', deepClone(option), this.id);
 				this.$emit('input', this.getValue(), this.id);
 
@@ -698,8 +730,7 @@ export default {
 		 * Opens the multiselect’s dropdown.
 		 * Sets this.isOpen to TRUE
 		 */
-		activate(evt) {
-			if (evt) evt.stopPropagation();
+		activate() {
 			/* istanbul ignore else */
 			if (this.isOpen || this.disabled) return;
 
@@ -710,13 +741,6 @@ export default {
 			}
 
 			this.isOpen = true;
-			/* istanbul ignore else  */
-			if (this.searchable) {
-				if (!this.preserveSearch) this.search = '';
-				this.$nextTick(() => {
-					if (this.$refs.search) this.$refs.search.focus();
-				});
-			} else if (this.$el) this.$el.focus();
 			this.$emit('open', this.id);
 		},
 		/**
@@ -729,12 +753,8 @@ export default {
 
 			this.isOpen = false;
 
-			/* istanbul ignore else  */
-			// if (this.searchable) {
-			// 	this.$refs.search.blur();
-			// } else {
-			// 	this.$el.blur();
-			// }
+			this.$el.focus();
+
 			if (!this.preserveSearch) this.search = '';
 			this.$emit('close', this.getValue(), this.id);
 		},

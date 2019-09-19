@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/cli-3-multiselect.iml" filepath="$PROJECT_DIR$/.idea/cli-3-multiselect.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/vue-multiselect.iml" filepath="$PROJECT_DIR$/.idea/vue-multiselect.iml" />
     </modules>
   </component>
 </project>
