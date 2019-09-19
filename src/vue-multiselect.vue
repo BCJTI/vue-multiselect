@@ -800,7 +800,7 @@
 	}
 
 	*[dir="rtl"] .multiselect__tags {
-		padding: 8px 8px 0px 40px;
+		padding: 8px 12px 0 35px;
 	}
 
 	*[dir="rtl"] .multiselect__content {
