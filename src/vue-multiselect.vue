@@ -5,6 +5,7 @@
 			:name="name"
 			:id="id"
 			@click="activate()"
+			@keypress="startTyping"
 			@keydown.space.enter.prevent="activate()"
 			@keydown.self.down.prevent="pointerForward()"
 			@keydown.self.up.prevent="pointerBackward()"

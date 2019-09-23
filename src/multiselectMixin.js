@@ -510,6 +510,12 @@ export default {
 				}, 0);
 			}
 		},
+		startTyping(e) {
+			if (!this.isOpen && /\w|\d/.test(e.char)) {
+				this.search += e.key;
+				this.activate();
+			}
+		},
 		/**
 		 * Converts the internal value to the external value
 		 * @returns {Object||Array||String||Integer} returns the external value
