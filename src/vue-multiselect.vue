@@ -47,7 +47,7 @@
 				</slot>
 			</transition>
 
-			<span class="multiselect__single">
+			<span class="multiselect__single" :title="currentOptionLabel || internalPlaceholder">
 				<slot v-if="currentOptionLabel" name="singleLabel" :option="currentOptionLabel">
 					<template>{{ currentOptionLabel }}</template>
 				</slot>
@@ -96,7 +96,7 @@
 						</span>
 					</li>
 					<template v-else>
-						<li class="multiselect__element" v-for="(option, index) of filteredOptions" :key="index">
+						<li class="multiselect__element" v-for="(option, index) of filteredOptions" :key="index" :title="getOptionLabel(option)">
 							<span
 									v-if="!(option && (option.$isLabel || option.$isDisabled))"
 									:class="optionHighlight(index, option)"
