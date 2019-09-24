@@ -638,7 +638,6 @@ export default {
 		 * @param  {Boolean} block removing
 		 */
 		select(option, key) {
-			console.log('select', option, key);
 			if (this.$el) this.$el.focus();
 
 			if (!option) {
@@ -664,7 +663,6 @@ export default {
 				} else {
 					this.internalValue = [option];
 				}
-				console.log('emited');
 				this.$emit('select', deepClone(option), this.id);
 				this.$emit('input', this.getValue(), this.id);
 
