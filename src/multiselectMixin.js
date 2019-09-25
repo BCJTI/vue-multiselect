@@ -6,8 +6,9 @@ function isEmpty(opt) {
 	return !opt;
 }
 
-function includes(str, query) {
+function includes(st, query) {
 	/* istanbul ignore else */
+	let str = st;
 	if (str === undefined) str = 'undefined';
 	if (str === null) str = 'null';
 	if (str === false) str = 'false';
@@ -401,7 +402,7 @@ export default {
 		},
 	},
 	watch: {
-		internalValue(newVal, oldVal) {
+		internalValue() {
 			/* istanbul ignore else */
 			if (this.resetAfter && this.internalValue.length) {
 				this.search = '';
@@ -770,9 +771,12 @@ export default {
 		 * @property {Boolean} isOpen indicates if dropdown is open
 		 */
 		toggle() {
-			this.isOpen
-				? this.deactivate()
-				: this.activate();
+			if (this.isOpen) {
+				this.deactivate();
+				return;
+			}
+
+			this.activate();
 		},
 		/**
 		 * Updates the hasEnoughSpace variable used for
