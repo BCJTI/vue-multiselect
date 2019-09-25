@@ -442,12 +442,12 @@ export default {
 		},
 
 		setWrapperPos() {
-			const { list } = this.$refs;
+			const { listWrapper } = this.$refs;
 
 			this.updatePos();
 
 			if (this.isOpen) {
-				if (!this.parentWrapper) this.parentWrapper = list.parentElement;
+				if (!this.parentWrapper) this.parentWrapper = listWrapper.parentElement;
 				if (!this.scrollableParent) {
 					this.scrollableParent = this.getScrollParent(this.$el.parentNode);
 					if (this.scrollableParent) this.scrollableParent.addEventListener('scroll', this.updatePos);
@@ -455,21 +455,21 @@ export default {
 				// const { top, left, width, height } = this.$el.getBoundingClientRect();
 				//
 				const fullscreenEl = this.getFullscreenElement();
-				fullscreenEl.appendChild(list);
+				fullscreenEl.appendChild(listWrapper);
 				//
-				// list.style.width = `${width}px`;
-				// list.style.left = `${left}px`;
+				// listWrapper.style.width = `${width}px`;
+				// listWrapper.style.left = `${left}px`;
 				// if (this.isAbove) {
-				// 	list.classList.add('above');
-				// 	list.style.top = 'auto';
+				// 	listWrapper.classList.add('above');
+				// 	listWrapper.style.top = 'auto';
 				// 	console.log(this.searchable);
-				// 	list.style.bottom = this.searchable
+				// 	listWrapper.style.bottom = this.searchable
 				// 		? `${window.innerHeight - top + height}px`
 				// 		: `${window.innerHeight - top}px`;
 				// } else {
-				// 	list.classList.remove('above');
-				// 	list.style.bottom = 'auto';
-				// 	list.style.top = `${top + height}px`;
+				// 	listWrapper.classList.remove('above');
+				// 	listWrapper.style.bottom = 'auto';
+				// 	listWrapper.style.top = `${top + height}px`;
 				// }
 
 				if (this.searchable) {
@@ -478,8 +478,8 @@ export default {
 						if (this.$refs.search) this.$refs.search.focus();
 					});
 				} else if (this.$el) this.$el.focus();
-			} else if (this.parentWrapper && list) {
-				this.parentWrapper.appendChild(list);
+			} else if (this.parentWrapper && listWrapper) {
+				this.parentWrapper.appendChild(listWrapper);
 			}
 		},
 
@@ -488,22 +488,22 @@ export default {
 				if (this.updatePosTimeout) clearTimeout(this.updatePosTimeout);
 
 				this.updatePosTimeout = setTimeout(() => {
-					const { list } = this.$refs;
+					const { listWrapper } = this.$refs;
 					const { top, bottom, left, width } = this.$el.getBoundingClientRect();
 
-					list.style.width = `${width}px`;
-					list.style.left = `${left}px`;
+					listWrapper.style.width = `${width}px`;
+					listWrapper.style.left = `${left}px`;
 
 					if (this.isAbove) {
-						list.classList.add('above');
-						list.style.top = 'auto';
-						list.style.bottom = this.searchable
+						listWrapper.classList.add('above');
+						listWrapper.style.top = 'auto';
+						listWrapper.style.bottom = this.searchable
 							? `${window.innerHeight - bottom}px`
 							: `${window.innerHeight - top}px`;
 					} else {
-						list.classList.remove('above');
-						list.style.bottom = 'auto';
-						list.style.top = this.searchable
+						listWrapper.classList.remove('above');
+						listWrapper.style.bottom = 'auto';
+						listWrapper.style.top = this.searchable
 							? `${top}px`
 							: `${bottom}px`;
 					}

@@ -60,7 +60,7 @@
 					class="multiselect__content-wrapper"
 					v-if="isOpen"
 					:style="{ width: selectWidth }"
-					ref="list"
+					ref="listWrapper"
 					@mousedown.prevent.stop
 					@keydown.tab.esc="deactivate()"
 					@keydown.down.prevent="pointerForward()"
@@ -88,7 +88,7 @@
 					</slot>
 				</div>
 
-				<ul class="multiselect__content" :class="{ 'full-border': !searchable }" :style="{ maxHeight: optimizedHeight + 'px' }">
+				<ul ref="list" class="multiselect__content" :class="{ 'full-border': !searchable }" :style="{ maxHeight: optimizedHeight + 'px' }">
 					<slot name="beforeList"></slot>
 					<li v-if="multiple && max === internalValue.length">
 						<span class="multiselect__option">

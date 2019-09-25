@@ -15,20 +15,22 @@ export default {
 			type: Boolean,
 			default: true,
 		},
-		optionHeight: {
-			type: Number,
-			default: 40,
-		},
 	},
 	computed: {
+		optionHeight() {
+			const first = (this.$refs.list.getElementsByTagName('li') || [])[0];
+			return first ? first.offsetHeight : 40;
+		},
+
 		pointerPosition() {
 			if (this.allowEmpty) {
 				return (this.pointer + 1) * this.optionHeight;
 			}
 			return this.pointer * this.optionHeight;
 		},
+
 		visibleElements() {
-			return this.optimizedHeight / this.optionHeight;
+			return this.$refs.list && this.$refs.list.offsetHeight / this.optionHeight;
 		},
 	},
 	watch: {
