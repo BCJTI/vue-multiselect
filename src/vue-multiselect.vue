@@ -36,12 +36,6 @@
 				<strong class="multiselect__strong" v-text="limitText(internalValue.length - limit)"></strong>
 			</template>
 
-			<transition name="multiselect__loading">
-				<slot name="loading">
-					<div v-show="loading" class="multiselect__spinner"></div>
-				</slot>
-			</transition>
-
 			<span class="multiselect__single" :title="currentOptionLabel || internalPlaceholder">
 				<slot v-if="currentOptionLabel" name="singleLabel" :option="currentOptionLabel">
 					<template>{{ currentOptionLabel }}</template>
@@ -50,11 +44,17 @@
 			</span>
 		</div>
 
+		<slot name="clear" :search="search"></slot>
+
+		<transition name="multiselect__loading">
+			<slot name="loading">
+				<div v-show="loading" class="multiselect__spinner"></div>
+			</slot>
+		</transition>
+
 		<slot name="carret" v-if="placeholder === internalPlaceholder">
 			<div class="multiselect__select"></div>
 		</slot>
-
-		<slot name="clear" :search="search"></slot>
 
 		<transition name="multiselect">
 			<div
@@ -394,54 +394,6 @@
 		border-color: #41B883;
 	}
 
-	.multiselect__spinner {
-		flex-shrink: 0;
-		display: block;
-		width: 48px;
-		border-radius: 50%;
-	}
-
-	.multiselect--disabled .multiselect__spinner {
-		background: #ededed;
-	}
-
-	.multiselect__spinner:before,
-	.multiselect__spinner:after {
-		position: absolute;
-		content: "";
-		top: 50%;
-		left: 50%;
-		margin: -8px 0 0 -8px;
-		width: 16px;
-		height: 16px;
-		border-radius: 50%;
-		border-color: #41B883 transparent transparent;
-		border-style: solid;
-		border-width: 2px;
-		box-shadow: 0 0 0 1px transparent;
-	}
-
-	.multiselect__spinner:before {
-		animation: spinning 2.4s cubic-bezier(0.41, 0.26, 0.2, 0.62);
-		animation-iteration-count: infinite;
-	}
-
-	.multiselect__spinner:after {
-		animation: spinning 2.4s cubic-bezier(0.51, 0.09, 0.21, 0.8);
-		animation-iteration-count: infinite;
-	}
-
-	.multiselect__loading-enter-active,
-	.multiselect__loading-leave-active {
-		transition: opacity 0.4s ease-in-out;
-		opacity: 1;
-	}
-
-	.multiselect__loading-enter,
-	.multiselect__loading-leave-active {
-		opacity: 0;
-	}
-
 	.multiselect,
 	.multiselect__input,
 	.multiselect__single {
@@ -587,6 +539,53 @@
 		border-style: solid;
 		border-width: 5px 5px 0 5px;
 		border-color: #999999 transparent transparent transparent;
+	}
+
+	.multiselect__spinner {
+		position: relative;
+		flex-shrink: 0;
+		display: block;
+    width: 22px;
+    height: 22px;
+    margin-left: 12px;
+		border-radius: 50%;
+	}
+
+	.multiselect__spinner:before,
+	.multiselect__spinner:after {
+		position: absolute;
+		content: '';
+		top: 50%;
+		left: 50%;
+		margin: -8px 0 0 -8px;
+		width: 16px;
+		height: 16px;
+		border-radius: 50%;
+		border-color: #41B883 transparent transparent;
+		border-style: solid;
+		border-width: 2px;
+		box-shadow: 0 0 0 1px transparent;
+	}
+
+	.multiselect__spinner:before {
+		animation: spinning 2.4s cubic-bezier(0.41, 0.26, 0.2, 0.62);
+		animation-iteration-count: infinite;
+	}
+
+	.multiselect__spinner:after {
+		animation: spinning 2.4s cubic-bezier(0.51, 0.09, 0.21, 0.8);
+		animation-iteration-count: infinite;
+	}
+
+	.multiselect__loading-enter-active,
+	.multiselect__loading-leave-active {
+		transition: opacity 0.4s ease-in-out;
+		opacity: 1;
+	}
+
+	.multiselect__loading-enter,
+	.multiselect__loading-leave-active {
+		opacity: 0;
 	}
 
 	.multiselect__placeholder {
@@ -816,8 +815,8 @@
 	}
 
 	*[dir="rtl"] .multiselect__spinner {
-		right: auto;
-		left: 1px;
+		margin-left: 0;
+		margin-right: 12px;
 	}
 
 	@keyframes spinning {

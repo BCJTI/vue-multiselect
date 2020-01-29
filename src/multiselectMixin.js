@@ -1,4 +1,4 @@
-import { deepClone, isArray, isObject } from './utils';
+import { deepClone, isObject } from './utils';
 
 function isEmpty(opt) {
 	if (opt === 0) return false;
