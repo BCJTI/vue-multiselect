@@ -1,4 +1,4 @@
-import deepClone from './utils';
+import { deepClone, isArray, isObject } from './utils';
 
 function isEmpty(opt) {
 	if (opt === 0) return false;
@@ -59,9 +59,6 @@ function filterGroups(search, label, values, groupLabel, customLabel) {
 }
 
 const flow = (...fns) => x => fns.reduce((v, f) => f(v), x);
-
-import isObject from './is-object';
-import isArray from './is-array';
 
 export default {
 	data() {
@@ -319,6 +316,19 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+
+		/**
+		 * First selected value, even if
+		 * it's not on options
+		 * @default null
+		 * @type {Object|String}
+		 */
+		firstValue: {
+			type: [Object, String],
+			default() {
+				return null;
+			},
+		},
 	},
 	mounted() {
 		/* istanbul ignore else */
@@ -401,22 +411,12 @@ export default {
 			return '100%';
 		},
 	},
-	watch: {
-		internalValue() {
-			/* istanbul ignore else */
-			if (this.resetAfter && this.internalValue.length) {
-				this.search = '';
-				this.internalValue = [];
-			}
-		},
-		search() {
-			this.$emit('search-change', this.search, this.id);
-		},
-		value(value) {
-			this.internalValue = this.getInternalValue(value);
-		},
-	},
 	methods: {
+		/**
+		 * Returns the first scrollable parent of passed Element
+		 * @param {Element} element to check
+		 * @param {Element} what will return if none has found (document by default)
+		 */
 		getScrollParent(node, defaultReturn = document) {
 			const isElement = node instanceof HTMLElement;
 			const overflowY = isElement && window.getComputedStyle(node).overflowY;
@@ -432,6 +432,10 @@ export default {
 			return this.getScrollParent(node.parentNode, defaultReturn) || defaultReturn;
 		},
 
+		/**
+		 * Returns the current fullscreen element or body if has none.
+		 * @returns {Element}
+		 */
 		getFullscreenElement() {
 			if (this.parentToAppend) {
 				return this.parentToAppend;
@@ -442,6 +446,9 @@ export default {
 			return fullscreen || document.body;
 		},
 
+		/**
+		 * Appends the list wrapper on the found scrollableParent, or returns it to the original parent
+		 */
 		setWrapperPos() {
 			const { listWrapper } = this.$refs;
 
@@ -484,6 +491,9 @@ export default {
 			}
 		},
 
+		/**
+		 * Updates listWrapper position based on $el rect
+		 */
 		updatePos() {
 			if (this.isOpen) {
 				if (this.updatePosTimeout) clearTimeout(this.updatePosTimeout);
@@ -511,6 +521,11 @@ export default {
 				}, 0);
 			}
 		},
+
+		/**
+		 * Activate when some char or digit are typed on closed multiselect
+		 * @param {InputEvent}
+		 */
 		startTyping(e) {
 			if (!this.isOpen && /\w|\d/.test(e.char)) {
 				this.search += e.key;
@@ -530,6 +545,7 @@ export default {
 						? this.internalValue[0][this.trackBy]
 						: this.internalValue[0]);
 		},
+
 		/**
 		 * Converts the external value to the internal value
 		 * @returns {Array} returns the internal value
@@ -541,20 +557,27 @@ export default {
 					? deepClone(value)
 					: deepClone(this.transformLocalValue(value) ? [this.transformLocalValue(value)] : []);
 		},
+
+		/**
+		 * Returns the equivalent option of the received value
+		 * @param {Object|String} current value
+		 * @returns {Object}
+		 */
 		transformLocalValue(value) {
-			if (isArray(this.options)) {
-				for (let i = 0; i < this.options.length; i++) {
-					const item = this.options[i];
+			return (this.options || [])
+				.find((item) => {
 					if (item === value
 						|| (isObject(value) && isObject(item) && value[this.trackBy] === item[this.trackBy])
 						|| (isObject(item) && value === item[this.trackBy])
 					) {
-						return item;
+						return true;
 					}
-				}
-			}
-			return { [this.trackBy]: '', [this.label]: '' };
+
+					return false;
+				})
+				|| { [this.trackBy]: '', [this.label]: '' };
 		},
+
 		/**
 		 * Filters and then flattens the options list
 		 * @param  {Array}
@@ -566,6 +589,7 @@ export default {
 				flattenOptions(this.groupValues, this.groupLabel),
 			)(options);
 		},
+
 		/**
 		 * Flattens and then strips the group labels from the options list
 		 * @param  {Array}
@@ -808,6 +832,33 @@ export default {
 			this.select(option);
 		},
 
+	},
+
+	watch: {
+		options() {
+			this.internalValue = this.getInternalValue(this.value);
+		},
+
+		isOpen(val) {
+			this.$nextTick(this.setWrapperPos);
+			this.internalPlaceholder = val && this.currentOptionLabel ? this.currentOptionLabel : this.placeholder;
+		},
+
+		value(value) {
+			this.internalValue = this.getInternalValue(value);
+		},
+
+		internalValue() {
+			/* istanbul ignore else */
+			if (this.resetAfter && this.internalValue.length) {
+				this.search = '';
+				this.internalValue = [];
+			}
+		},
+
+		search() {
+			this.$emit('search-change', this.search, this.id);
+		},
 	},
 
 };

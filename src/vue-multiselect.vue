@@ -1,7 +1,7 @@
 <template>
 	<div
 			:tabindex="disabled || (searchable && isOpen) ? -1 : tabindex"
-			:class="{ 'multiselect--disabled': disabled }"
+			:class="{ 'multiselect--disabled': disabled, [css]: !!css, }"
 			:name="name"
 			:id="id"
 			@click="activate()"
@@ -15,11 +15,6 @@
 			Quando corrigir isso, remover o stopPropagation do click
 			@blur="searchable ? false : deactivate()"
 		-->
-		<slot name="carret" v-if="placeholder === internalPlaceholder">
-			<div class="multiselect__select"></div>
-		</slot>
-
-		<slot name="clear" :search="search"></slot>
 
 		<div ref="tags" class="multiselect__tags">
 
@@ -55,10 +50,17 @@
 			</span>
 		</div>
 
+		<slot name="carret" v-if="placeholder === internalPlaceholder">
+			<div class="multiselect__select"></div>
+		</slot>
+
+		<slot name="clear" :search="search"></slot>
+
 		<transition name="multiselect">
 			<div
-					class="multiselect__content-wrapper"
 					v-if="isOpen"
+					class="multiselect__content-wrapper"
+					:class="{ above: isAbove }"
 					:style="{ width: selectWidth }"
 					ref="listWrapper"
 					@mousedown.prevent.stop
@@ -68,20 +70,22 @@
 					@keydown.enter.prevent.stop="addPointerElement($event)"
 					@keydown.delete.stop="removeLastElement()"
 			>
-				<div v-if="searchable" class="multiselect__tags multiselect__content__input" :class="{'custom-placeholder': placeholder !== internalPlaceholder}">
-					<input
-							ref="search"
-							:name="name + '-input'"
-							:id="id + '-input'"
-							type="text"
-							autocomplete="off"
-							:placeholder="internalPlaceholder"
-							:style="inputStyle"
-							v-model="search"
-							:disabled="disabled"
-							:tabindex="tabindex"
-							class="multiselect__input"
-					/>
+				<div v-if="searchable" class="multiselect" :class="css">
+					<div class="multiselect__tags multiselect__content__input" :class="{'custom-placeholder': placeholder !== internalPlaceholder}">
+						<input
+								ref="search"
+								:name="name + '-input'"
+								:id="id + '-input'"
+								type="text"
+								autocomplete="off"
+								:placeholder="internalPlaceholder"
+								:style="inputStyle"
+								v-model="search"
+								:disabled="disabled"
+								:tabindex="tabindex"
+								class="multiselect__input"
+						/>
+					</div>
 
 					<slot name="carret" v-if="placeholder === internalPlaceholder">
 						<div @mousedown.prevent="toggle()" class="multiselect__select"></div>
@@ -140,6 +144,16 @@
 		mixins: [multiselectMixin, pointerMixin],
 
 		props: {
+
+			/**
+			 * css to be aplied in both .multiselect divs
+			 * @default ''
+			 * @type {String}
+			 */
+			css: {
+				type: String,
+				default: '',
+			},
 
 			/**
 			 * name attribute to match optional label element
@@ -202,7 +216,7 @@
 			 */
 			maxHeight: {
 				type: Number,
-				default: 300,
+				default: 40 * 6.5,
 			},
 			/**
 			 * Function that process the message shown when selected
@@ -259,7 +273,7 @@
 
 		data() {
 			return {
-				internalValue: this.getInternalValue(this.value),
+				internalValue: this.firstValue || this.getInternalValue(this.value),
 				contentContainer: null,
 				internalPlaceholder: this.placeholder,
 			};
@@ -348,17 +362,6 @@
 
 		},
 
-		watch: {
-			options() {
-				this.internalValue = this.getInternalValue(this.value);
-			},
-
-			isOpen(val) {
-				this.$nextTick(this.setWrapperPos);
-				this.internalPlaceholder = val && this.currentOptionLabel ? this.currentOptionLabel : this.placeholder;
-			},
-		},
-
 	};
 </script>
 
@@ -373,24 +376,29 @@
 	}
 
 	.multiselect {
-		box-sizing: content-box;
-		display: block;
+		outline: none;
+		display: flex;
+		align-items: center;
 		position: relative;
 		width: 100%;
 		min-height: 40px;
 		text-align: left;
 		color: #35495E;
-		background: #fff;
+		border-radius: 5px;
+		border: 1px solid #E8E8E8;
+		background-color: #FFFFFF;
+	}
+
+	.multiselect:focus,
+	.multiselect__content-wrapper .multiselect {
+		border-color: #41B883;
 	}
 
 	.multiselect__spinner {
-		position: absolute;
-		right: 1px;
-		top: 1px;
-		width: 48px;
-		height: 35px;
-		background: #fff;
+		flex-shrink: 0;
 		display: block;
+		width: 48px;
+		border-radius: 50%;
 	}
 
 	.multiselect--disabled .multiselect__spinner {
@@ -406,7 +414,7 @@
 		margin: -8px 0 0 -8px;
 		width: 16px;
 		height: 16px;
-		border-radius: 100%;
+		border-radius: 50%;
 		border-color: #41B883 transparent transparent;
 		border-style: solid;
 		border-width: 2px;
@@ -456,11 +464,8 @@
 		border: none;
 		border-radius: 5px;
 		background: transparent;
-		padding: 1px 0 0 5px;
-		width: calc(100%);
+		width: 100%;
 		transition: border 0.1s ease;
-		box-sizing: border-box;
-		margin-bottom: 8px;
 		vertical-align: top;
 	}
 
@@ -491,11 +496,10 @@
 	}
 
 	.multiselect__tags {
-		min-height: 40px;
-		display: block;
-		padding: 8px 35px 0 12px;
-		border-radius: 5px;
-		border: 1px solid #E8E8E8;
+		width: 100%;
+		padding: 0 0 0 12px;
+		text-overflow: ellipsis;
+		overflow: hidden;
 	}
 
 	.multiselect__tag {
@@ -549,7 +553,6 @@
 	.multiselect__current {
 		line-height: 16px;
 		min-height: 40px;
-		box-sizing: border-box;
 		display: block;
 		overflow: hidden;
 		padding: 8px 12px 0;
@@ -563,32 +566,27 @@
 	}
 
 	.multiselect__select {
-		line-height: 16px;
+		flex-shrink: 0;
+		cursor: pointer;
 		display: block;
-		position: absolute;
-		box-sizing: border-box;
 		width: 35px;
-		height: 38px;
-		right: 1px;
-		top: 1px;
-		padding: 4px 12px;
 		margin: 0;
+		padding: 0 12px;
+		border-radius: 50%;
+		line-height: 5px;
 		text-decoration: none;
 		text-align: center;
-		cursor: pointer;
+		display: inline-block;
 		transition: transform 0.2s ease;
 	}
 
 	.multiselect__select:before {
-		position: relative;
-		right: 0;
-		top: 65%;
+		content: '';
+		display: inline-block;
 		color: #999;
-		margin-top: 4px;
 		border-style: solid;
 		border-width: 5px 5px 0 5px;
 		border-color: #999999 transparent transparent transparent;
-		content: "";
 	}
 
 	.multiselect__placeholder {
@@ -606,23 +604,35 @@
 		position: fixed;
 		display: flex;
 		flex-direction: column;
-		background: #fff;
 		width: 100%;
-		max-height: 240px;
-		border-bottom-left-radius: 5px;
-		border-bottom-right-radius: 5px;
-		z-index: 50;
+		z-index: 99999999999;
 		-webkit-overflow-scrolling: touch;
 	}
 
-	.multiselect__content-wrapper.above {
-		flex-direction: column-reverse;
+	.multiselect__content-wrapper:not(.above) > *:not(:last-child) {
 		border-bottom-left-radius: 0;
 		border-bottom-right-radius: 0;
 	}
 
-	.multiselect__content-wrapper.above .multiselect__content {
-		border-width: 1px 1px 0;
+	.multiselect__content-wrapper:not(.above) > *:not(:first-child) {
+		border-top-width: 0;
+		border-top-left-radius: 0;
+		border-top-right-radius: 0;
+	}
+
+	.multiselect__content-wrapper.above {
+		flex-direction: column-reverse;
+	}
+
+	.multiselect__content-wrapper.above > *:not(:last-child) {
+		border-top-left-radius: 0;
+		border-top-right-radius: 0;
+	}
+
+	.multiselect__content-wrapper.above > *:not(:first-child) {
+		border-bottom-width: 0;
+		border-bottom-left-radius: 0;
+		border-bottom-right-radius: 0;
 	}
 
 	.multiselect__content.full-border {
@@ -636,12 +646,13 @@
 		margin: 0;
 		min-width: 100%;
 		height: 100%;
-		vertical-align: top;
 		overflow-x: hidden;
 		overflow-y: auto;
-		border-width: 0 1px 1px;
+		border-width: 1px;
+		border-radius: 5px;
 		border-style: solid;
 		border-color: #E8E8E8;
+		background-color: #FFFFFF;
 	}
 
 	.multiselect__content::webkit-scrollbar {
@@ -659,7 +670,6 @@
 		line-height: 16px;
 		text-decoration: none;
 		text-transform: none;
-		vertical-align: middle;
 		position: relative;
 		cursor: pointer;
 		white-space: nowrap;
@@ -675,18 +685,6 @@
 		padding-left: 20px;
 	}
 
-	.deselect__option--highlight {
-		background: #41B883;
-		outline: none;
-		color: white;
-	}
-
-	.deselect__option--highlight:after {
-		content: attr(data-select);
-		background: #41B883;
-		color: white;
-	}
-
 	.multiselect__option {
 		display: block;
 		padding: 12px;
@@ -694,7 +692,6 @@
 		line-height: 16px;
 		text-decoration: none;
 		text-transform: none;
-		vertical-align: middle;
 		position: relative;
 		cursor: pointer;
 		white-space: nowrap;

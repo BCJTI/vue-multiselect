@@ -464,6 +464,57 @@ module.exports = function (it, key) {
 
 /***/ }),
 
+/***/ "0a49":
+/***/ (function(module, exports, __webpack_require__) {
+
+// 0 -> Array#forEach
+// 1 -> Array#map
+// 2 -> Array#filter
+// 3 -> Array#some
+// 4 -> Array#every
+// 5 -> Array#find
+// 6 -> Array#findIndex
+var ctx = __webpack_require__("9b43");
+var IObject = __webpack_require__("626a");
+var toObject = __webpack_require__("4bf8");
+var toLength = __webpack_require__("9def");
+var asc = __webpack_require__("cd1c");
+module.exports = function (TYPE, $create) {
+  var IS_MAP = TYPE == 1;
+  var IS_FILTER = TYPE == 2;
+  var IS_SOME = TYPE == 3;
+  var IS_EVERY = TYPE == 4;
+  var IS_FIND_INDEX = TYPE == 6;
+  var NO_HOLES = TYPE == 5 || IS_FIND_INDEX;
+  var create = $create || asc;
+  return function ($this, callbackfn, that) {
+    var O = toObject($this);
+    var self = IObject(O);
+    var f = ctx(callbackfn, that, 3);
+    var length = toLength(self.length);
+    var index = 0;
+    var result = IS_MAP ? create($this, length) : IS_FILTER ? create($this, 0) : undefined;
+    var val, res;
+    for (;length > index; index++) if (NO_HOLES || index in self) {
+      val = self[index];
+      res = f(val, index, O);
+      if (TYPE) {
+        if (IS_MAP) result[index] = res;   // map
+        else if (res) switch (TYPE) {
+          case 3: return true;             // some
+          case 5: return val;              // find
+          case 6: return index;            // findIndex
+          case 2: result.push(val);        // filter
+        } else if (IS_EVERY) return false; // every
+      }
+    }
+    return IS_FIND_INDEX ? -1 : IS_SOME || IS_EVERY ? IS_EVERY : result;
+  };
+};
+
+
+/***/ }),
+
 /***/ "0bfb":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -508,6 +559,18 @@ var min = Math.min;
 module.exports = function (index, length) {
   index = toInteger(index);
   return index < 0 ? max(index + length, 0) : min(index, length);
+};
+
+
+/***/ }),
+
+/***/ "1169":
+/***/ (function(module, exports, __webpack_require__) {
+
+// 7.2.2 IsArray(argument)
+var cof = __webpack_require__("2d95");
+module.exports = Array.isArray || function isArray(arg) {
+  return cof(arg) == 'Array';
 };
 
 
@@ -2086,6 +2149,28 @@ module.exports = function (TO_STRING) {
 
 /***/ }),
 
+/***/ "7514":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+// 22.1.3.8 Array.prototype.find(predicate, thisArg = undefined)
+var $export = __webpack_require__("5ca1");
+var $find = __webpack_require__("0a49")(5);
+var KEY = 'find';
+var forced = true;
+// Shouldn't skip holes
+if (KEY in []) Array(1)[KEY](function () { forced = false; });
+$export($export.P + $export.F * forced, 'Array', {
+  find: function find(callbackfn /* , that = undefined */) {
+    return $find(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+  }
+});
+__webpack_require__("9c6c")(KEY);
+
+
+/***/ }),
+
 /***/ "765d":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2992,6 +3077,19 @@ exports.f = __webpack_require__("5168");
 
 /***/ }),
 
+/***/ "cd1c":
+/***/ (function(module, exports, __webpack_require__) {
+
+// 9.4.2.3 ArraySpeciesCreate(originalArray, length)
+var speciesConstructor = __webpack_require__("e853");
+
+module.exports = function (original, length) {
+  return new (speciesConstructor(original))(length);
+};
+
+
+/***/ }),
+
 /***/ "ce10":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3196,6 +3294,29 @@ module.exports = function (object, names) {
 
 /***/ }),
 
+/***/ "e853":
+/***/ (function(module, exports, __webpack_require__) {
+
+var isObject = __webpack_require__("d3f4");
+var isArray = __webpack_require__("1169");
+var SPECIES = __webpack_require__("2b4c")('species');
+
+module.exports = function (original) {
+  var C;
+  if (isArray(original)) {
+    C = original.constructor;
+    // cross-realm fallback
+    if (typeof C == 'function' && (C === Array || isArray(C.prototype))) C = undefined;
+    if (isObject(C)) {
+      C = C[SPECIES];
+      if (C === null) C = undefined;
+    }
+  } return C === undefined ? Array : C;
+};
+
+
+/***/ }),
+
 /***/ "ebfd":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3370,12 +3491,14 @@ if (typeof window !== 'undefined') {
 // Indicate to webpack that this file can be concatenated
 /* harmony default export */ var setPublicPath = (null);
 
-// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"dabde93c-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/vue-multiselect.vue?vue&type=template&id=3bdf0e58&
-var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"multiselect",class:{ 'multiselect--disabled': _vm.disabled },attrs:{"tabindex":_vm.disabled || (_vm.searchable && _vm.isOpen) ? -1 : _vm.tabindex,"name":_vm.name,"id":_vm.id},on:{"click":function($event){return _vm.activate()},"keypress":_vm.startTyping,"keydown":[function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"space",32,$event.key,[" ","Spacebar"])&&_vm._k($event.keyCode,"enter",13,$event.key,"Enter")){ return null; }$event.preventDefault();return _vm.activate()},function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"down",40,$event.key,["Down","ArrowDown"])){ return null; }if($event.target !== $event.currentTarget){ return null; }$event.preventDefault();return _vm.pointerForward()},function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"up",38,$event.key,["Up","ArrowUp"])){ return null; }if($event.target !== $event.currentTarget){ return null; }$event.preventDefault();return _vm.pointerBackward()}]}},[(_vm.placeholder === _vm.internalPlaceholder)?_vm._t("carret",[_c('div',{staticClass:"multiselect__select"})]):_vm._e(),_vm._t("clear",null,{"search":_vm.search}),_c('div',{ref:"tags",staticClass:"multiselect__tags"},[_c('div',{directives:[{name:"show",rawName:"v-show",value:(_vm.visibleValue.length > 0),expression:"visibleValue.length > 0"}],staticClass:"multiselect__tags-wrap"},[_vm._l((_vm.visibleValue),function(option){return [_vm._t("tag",[_c('span',{staticClass:"multiselect__tag"},[_c('span',{domProps:{"textContent":_vm._s(_vm.getOptionLabel(option))}}),_c('i',{staticClass:"multiselect__tag-icon",attrs:{"aria-hidden":"true","tabindex":"1"},on:{"keydown":function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"enter",13,$event.key,"Enter")){ return null; }$event.preventDefault();return _vm.removeElement(option)},"mousedown":function($event){$event.preventDefault();return _vm.removeElement(option)}}})])],{"option":option,"search":_vm.search,"remove":_vm.removeElement})]})],2),(_vm.internalValue && _vm.internalValue.length > _vm.limit)?[_c('strong',{staticClass:"multiselect__strong",domProps:{"textContent":_vm._s(_vm.limitText(_vm.internalValue.length - _vm.limit))}})]:_vm._e(),_c('transition',{attrs:{"name":"multiselect__loading"}},[_vm._t("loading",[_c('div',{directives:[{name:"show",rawName:"v-show",value:(_vm.loading),expression:"loading"}],staticClass:"multiselect__spinner"})])],2),_c('span',{staticClass:"multiselect__single",attrs:{"title":_vm.currentOptionLabel || _vm.internalPlaceholder}},[(_vm.currentOptionLabel)?_vm._t("singleLabel",[[_vm._v(_vm._s(_vm.currentOptionLabel))]],{"option":_vm.currentOptionLabel}):[_vm._v(_vm._s(_vm.internalPlaceholder))]],2)],2),_c('transition',{attrs:{"name":"multiselect"}},[(_vm.isOpen)?_c('div',{ref:"listWrapper",staticClass:"multiselect__content-wrapper",style:({ width: _vm.selectWidth }),on:{"mousedown":function($event){$event.preventDefault();$event.stopPropagation();},"keydown":[function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"tab",9,$event.key,"Tab")&&_vm._k($event.keyCode,"esc",27,$event.key,["Esc","Escape"])){ return null; }return _vm.deactivate()},function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"down",40,$event.key,["Down","ArrowDown"])){ return null; }$event.preventDefault();return _vm.pointerForward()},function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"up",38,$event.key,["Up","ArrowUp"])){ return null; }$event.preventDefault();return _vm.pointerBackward()},function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"enter",13,$event.key,"Enter")){ return null; }$event.preventDefault();$event.stopPropagation();return _vm.addPointerElement($event)},function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"delete",[8,46],$event.key,["Backspace","Delete","Del"])){ return null; }$event.stopPropagation();return _vm.removeLastElement()}]}},[(_vm.searchable)?_c('div',{staticClass:"multiselect__tags multiselect__content__input",class:{'custom-placeholder': _vm.placeholder !== _vm.internalPlaceholder}},[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.search),expression:"search"}],ref:"search",staticClass:"multiselect__input",style:(_vm.inputStyle),attrs:{"name":_vm.name + '-input',"id":_vm.id + '-input',"type":"text","autocomplete":"off","placeholder":_vm.internalPlaceholder,"disabled":_vm.disabled,"tabindex":_vm.tabindex},domProps:{"value":(_vm.search)},on:{"input":function($event){if($event.target.composing){ return; }_vm.search=$event.target.value}}}),(_vm.placeholder === _vm.internalPlaceholder)?_vm._t("carret",[_c('div',{staticClass:"multiselect__select",on:{"mousedown":function($event){$event.preventDefault();return _vm.toggle()}}})]):_vm._e()],2):_vm._e(),_c('ul',{ref:"list",staticClass:"multiselect__content",class:{ 'full-border': !_vm.searchable },style:({ maxHeight: _vm.optimizedHeight + 'px' })},[_vm._t("beforeList"),(_vm.multiple && _vm.max === _vm.internalValue.length)?_c('li',[_c('span',{staticClass:"multiselect__option"},[_vm._t("maxElements",[_vm._v("Maximum of "+_vm._s(_vm.max)+" options selected. First remove a selected option to select another.")])],2)]):_vm._l((_vm.filteredOptions),function(option,index){return _c('li',{key:index,staticClass:"multiselect__element",attrs:{"title":_vm.getOptionLabel(option)}},[(!(option && (option.$isLabel || option.$isDisabled)))?_c('span',{staticClass:"multiselect__option",class:_vm.optionHighlight(index, option),attrs:{"data-select":option && option.isTag ? _vm.tagPlaceholder : _vm.selectLabelText,"data-selected":_vm.selectedLabelText},on:{"mousedown":function($event){$event.stopPropagation();return _vm.select(option)},"mouseenter":function($event){if($event.target !== $event.currentTarget){ return null; }return _vm.pointerSet(index)}}},[_vm._t("option",[_c('span',[_vm._v(_vm._s(_vm.getOptionLabel(option)))])],{"option":option,"search":_vm.search})],2):_vm._e(),(option && (option.$isLabel || option.$isDisabled))?_c('span',{staticClass:"multiselect__option multiselect__option--disabled",class:_vm.optionHighlight(index, option)},[_vm._t("option",[_c('span',[_vm._v(_vm._s(_vm.getOptionLabel(option)))])],{"option":option,"search":_vm.search})],2):_vm._e()])}),_c('li',{directives:[{name:"show",rawName:"v-show",value:(_vm.showNoResults && (_vm.filteredOptions.length === 0 && _vm.search && !_vm.loading)),expression:"showNoResults && (filteredOptions.length === 0 && search && !loading)"}]},[_c('span',{staticClass:"multiselect__option"},[_vm._t("noResult",[_vm._v("No elements found. Consider changing the search query.")])],2)]),_vm._t("afterList")],2)]):_vm._e()])],2)}
+// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"dabde93c-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/vue-multiselect.vue?vue&type=template&id=95542fc0&
+var render = function () {
+var _obj;
+var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"multiselect",class:( _obj = { 'multiselect--disabled': _vm.disabled }, _obj[_vm.css] = !!_vm.css, _obj ),attrs:{"tabindex":_vm.disabled || (_vm.searchable && _vm.isOpen) ? -1 : _vm.tabindex,"name":_vm.name,"id":_vm.id},on:{"click":function($event){return _vm.activate()},"keypress":_vm.startTyping,"keydown":[function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"space",32,$event.key,[" ","Spacebar"])&&_vm._k($event.keyCode,"enter",13,$event.key,"Enter")){ return null; }$event.preventDefault();return _vm.activate()},function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"down",40,$event.key,["Down","ArrowDown"])){ return null; }if($event.target !== $event.currentTarget){ return null; }$event.preventDefault();return _vm.pointerForward()},function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"up",38,$event.key,["Up","ArrowUp"])){ return null; }if($event.target !== $event.currentTarget){ return null; }$event.preventDefault();return _vm.pointerBackward()}]}},[_c('div',{ref:"tags",staticClass:"multiselect__tags"},[_c('div',{directives:[{name:"show",rawName:"v-show",value:(_vm.visibleValue.length > 0),expression:"visibleValue.length > 0"}],staticClass:"multiselect__tags-wrap"},[_vm._l((_vm.visibleValue),function(option){return [_vm._t("tag",[_c('span',{staticClass:"multiselect__tag"},[_c('span',{domProps:{"textContent":_vm._s(_vm.getOptionLabel(option))}}),_c('i',{staticClass:"multiselect__tag-icon",attrs:{"aria-hidden":"true","tabindex":"1"},on:{"keydown":function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"enter",13,$event.key,"Enter")){ return null; }$event.preventDefault();return _vm.removeElement(option)},"mousedown":function($event){$event.preventDefault();return _vm.removeElement(option)}}})])],{"option":option,"search":_vm.search,"remove":_vm.removeElement})]})],2),(_vm.internalValue && _vm.internalValue.length > _vm.limit)?[_c('strong',{staticClass:"multiselect__strong",domProps:{"textContent":_vm._s(_vm.limitText(_vm.internalValue.length - _vm.limit))}})]:_vm._e(),_c('transition',{attrs:{"name":"multiselect__loading"}},[_vm._t("loading",[_c('div',{directives:[{name:"show",rawName:"v-show",value:(_vm.loading),expression:"loading"}],staticClass:"multiselect__spinner"})])],2),_c('span',{staticClass:"multiselect__single",attrs:{"title":_vm.currentOptionLabel || _vm.internalPlaceholder}},[(_vm.currentOptionLabel)?_vm._t("singleLabel",[[_vm._v(_vm._s(_vm.currentOptionLabel))]],{"option":_vm.currentOptionLabel}):[_vm._v(_vm._s(_vm.internalPlaceholder))]],2)],2),(_vm.placeholder === _vm.internalPlaceholder)?_vm._t("carret",[_c('div',{staticClass:"multiselect__select"})]):_vm._e(),_vm._t("clear",null,{"search":_vm.search}),_c('transition',{attrs:{"name":"multiselect"}},[(_vm.isOpen)?_c('div',{ref:"listWrapper",staticClass:"multiselect__content-wrapper",class:{ above: _vm.isAbove },style:({ width: _vm.selectWidth }),on:{"mousedown":function($event){$event.preventDefault();$event.stopPropagation();},"keydown":[function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"tab",9,$event.key,"Tab")&&_vm._k($event.keyCode,"esc",27,$event.key,["Esc","Escape"])){ return null; }return _vm.deactivate()},function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"down",40,$event.key,["Down","ArrowDown"])){ return null; }$event.preventDefault();return _vm.pointerForward()},function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"up",38,$event.key,["Up","ArrowUp"])){ return null; }$event.preventDefault();return _vm.pointerBackward()},function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"enter",13,$event.key,"Enter")){ return null; }$event.preventDefault();$event.stopPropagation();return _vm.addPointerElement($event)},function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"delete",[8,46],$event.key,["Backspace","Delete","Del"])){ return null; }$event.stopPropagation();return _vm.removeLastElement()}]}},[(_vm.searchable)?_c('div',{staticClass:"multiselect",class:_vm.css},[_c('div',{staticClass:"multiselect__tags multiselect__content__input",class:{'custom-placeholder': _vm.placeholder !== _vm.internalPlaceholder}},[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.search),expression:"search"}],ref:"search",staticClass:"multiselect__input",style:(_vm.inputStyle),attrs:{"name":_vm.name + '-input',"id":_vm.id + '-input',"type":"text","autocomplete":"off","placeholder":_vm.internalPlaceholder,"disabled":_vm.disabled,"tabindex":_vm.tabindex},domProps:{"value":(_vm.search)},on:{"input":function($event){if($event.target.composing){ return; }_vm.search=$event.target.value}}})]),(_vm.placeholder === _vm.internalPlaceholder)?_vm._t("carret",[_c('div',{staticClass:"multiselect__select",on:{"mousedown":function($event){$event.preventDefault();return _vm.toggle()}}})]):_vm._e()],2):_vm._e(),_c('ul',{ref:"list",staticClass:"multiselect__content",class:{ 'full-border': !_vm.searchable },style:({ maxHeight: _vm.optimizedHeight + 'px' })},[_vm._t("beforeList"),(_vm.multiple && _vm.max === _vm.internalValue.length)?_c('li',[_c('span',{staticClass:"multiselect__option"},[_vm._t("maxElements",[_vm._v("Maximum of "+_vm._s(_vm.max)+" options selected. First remove a selected option to select another.")])],2)]):_vm._l((_vm.filteredOptions),function(option,index){return _c('li',{key:index,staticClass:"multiselect__element",attrs:{"title":_vm.getOptionLabel(option)}},[(!(option && (option.$isLabel || option.$isDisabled)))?_c('span',{staticClass:"multiselect__option",class:_vm.optionHighlight(index, option),attrs:{"data-select":option && option.isTag ? _vm.tagPlaceholder : _vm.selectLabelText,"data-selected":_vm.selectedLabelText},on:{"mousedown":function($event){$event.stopPropagation();return _vm.select(option)},"mouseenter":function($event){if($event.target !== $event.currentTarget){ return null; }return _vm.pointerSet(index)}}},[_vm._t("option",[_c('span',[_vm._v(_vm._s(_vm.getOptionLabel(option)))])],{"option":option,"search":_vm.search})],2):_vm._e(),(option && (option.$isLabel || option.$isDisabled))?_c('span',{staticClass:"multiselect__option multiselect__option--disabled",class:_vm.optionHighlight(index, option)},[_vm._t("option",[_c('span',[_vm._v(_vm._s(_vm.getOptionLabel(option)))])],{"option":option,"search":_vm.search})],2):_vm._e()])}),_c('li',{directives:[{name:"show",rawName:"v-show",value:(_vm.showNoResults && (_vm.filteredOptions.length === 0 && _vm.search && !_vm.loading)),expression:"showNoResults && (filteredOptions.length === 0 && search && !loading)"}]},[_c('span',{staticClass:"multiselect__option"},[_vm._t("noResult",[_vm._v("No elements found. Consider changing the search query.")])],2)]),_vm._t("afterList")],2)]):_vm._e()])],2)}
 var staticRenderFns = []
 
 
-// CONCATENATED MODULE: ./src/vue-multiselect.vue?vue&type=template&id=3bdf0e58&
+// CONCATENATED MODULE: ./src/vue-multiselect.vue?vue&type=template&id=95542fc0&
 
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es6.number.constructor.js
 var es6_number_constructor = __webpack_require__("c5f6");
@@ -3407,6 +3530,9 @@ function typeof_typeof(obj) {
 
   return typeof_typeof(obj);
 }
+// EXTERNAL MODULE: ./node_modules/core-js/modules/es6.array.find.js
+var es6_array_find = __webpack_require__("7514");
+
 // EXTERNAL MODULE: ./node_modules/@babel/runtime-corejs2/core-js/array/is-array.js
 var is_array = __webpack_require__("a745");
 var is_array_default = /*#__PURE__*/__webpack_require__.n(is_array);
@@ -3488,12 +3614,13 @@ var es6_object_keys = __webpack_require__("456d");
 
 
 
+
 /**
  * Returns a deeply cloned object without reference.
  * Copied from Vuex.
  * @type {Object}
  */
-function deepClone(obj) {
+var utils_deepClone = function deepClone(obj) {
   if (Array.isArray(obj)) {
     return obj.map(deepClone);
   }
@@ -3511,24 +3638,21 @@ function deepClone(obj) {
   }
 
   return obj;
-}
-// CONCATENATED MODULE: ./src/is-object.js
-
-function isObject(value) {
-  return Object.prototype.toString.call(value) === '[object Object]';
-}
-// CONCATENATED MODULE: ./src/is-array.js
-
-
+};
 /**
  *
  * @param value
  * @returns {boolean}
  */
-function isArray(value) {
+
+var isArray = function isArray(value) {
   return Object.prototype.toString.call(value) === '[object Array]';
-}
+};
+var isObject = function isObject(value) {
+  return Object.prototype.toString.call(value) === '[object Object]';
+};
 // CONCATENATED MODULE: ./src/multiselectMixin.js
+
 
 
 
@@ -3545,8 +3669,9 @@ function isEmpty(opt) {
   return !opt;
 }
 
-function includes(str, query) {
+function includes(st, query) {
   /* istanbul ignore else */
+  var str = st;
   if (str === undefined) str = 'undefined';
   if (str === null) str = 'null';
   if (str === false) str = 'false';
@@ -3612,8 +3737,6 @@ var flow = function flow() {
   };
 };
 
-
-
 /* harmony default export */ var multiselectMixin = ({
   data: function data() {
     return {
@@ -3623,7 +3746,7 @@ var flow = function flow() {
       isOpen: false,
       prefferedOpenDirection: 'below',
       optimizedHeight: this.maxHeight,
-      internalValue: this.value || this.value === 0 ? deepClone(Array.isArray(this.value) ? this.value : [this.value]) : [],
+      internalValue: this.value || this.value === 0 ? utils_deepClone(Array.isArray(this.value) ? this.value : [this.value]) : [],
       updatePosTimeout: null
     };
   },
@@ -3891,6 +4014,19 @@ var flow = function flow() {
     preserveSearch: {
       type: Boolean,
       default: false
+    },
+
+    /**
+     * First selected value, even if
+     * it's not on options
+     * @default null
+     * @type {Object|String}
+     */
+    firstValue: {
+      type: [Object, String],
+      default: function _default() {
+        return null;
+      }
     }
   },
   mounted: function mounted() {
@@ -3984,22 +4120,12 @@ var flow = function flow() {
       return '100%';
     }
   },
-  watch: {
-    internalValue: function internalValue(newVal, oldVal) {
-      /* istanbul ignore else */
-      if (this.resetAfter && this.internalValue.length) {
-        this.search = '';
-        this.internalValue = [];
-      }
-    },
-    search: function search() {
-      this.$emit('search-change', this.search, this.id);
-    },
-    value: function value(_value) {
-      this.internalValue = this.getInternalValue(_value);
-    }
-  },
   methods: {
+    /**
+     * Returns the first scrollable parent of passed Element
+     * @param {Element} element to check
+     * @param {Element} what will return if none has found (document by default)
+     */
     getScrollParent: function getScrollParent(node) {
       var defaultReturn = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
       var isElement = node instanceof HTMLElement;
@@ -4016,6 +4142,11 @@ var flow = function flow() {
 
       return this.getScrollParent(node.parentNode, defaultReturn) || defaultReturn;
     },
+
+    /**
+     * Returns the current fullscreen element or body if has none.
+     * @returns {Element}
+     */
     getFullscreenElement: function getFullscreenElement() {
       if (this.parentToAppend) {
         return this.parentToAppend;
@@ -4024,6 +4155,10 @@ var flow = function flow() {
       var fullscreen = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
       return fullscreen || document.body;
     },
+
+    /**
+     * Appends the list wrapper on the found scrollableParent, or returns it to the original parent
+     */
     setWrapperPos: function setWrapperPos() {
       var _this3 = this;
 
@@ -4067,6 +4202,10 @@ var flow = function flow() {
         this.parentWrapper.appendChild(listWrapper);
       }
     },
+
+    /**
+     * Updates listWrapper position based on $el rect
+     */
     updatePos: function updatePos() {
       var _this4 = this;
 
@@ -4096,6 +4235,11 @@ var flow = function flow() {
         }, 0);
       }
     },
+
+    /**
+     * Activate when some char or digit are typed on closed multiselect
+     * @param {InputEvent}
+     */
     startTyping: function startTyping(e) {
       if (!this.isOpen && /\w|\d/.test(e.char)) {
         this.search += e.key;
@@ -4108,7 +4252,7 @@ var flow = function flow() {
      * @returns {Object||Array||String||Integer} returns the external value
      */
     getValue: function getValue() {
-      return this.multiple ? deepClone(this.internalValue) : this.internalValue.length === 0 ? null : deepClone(Object.prototype.hasOwnProperty.call(this.internalValue[0], this.trackBy) ? this.internalValue[0][this.trackBy] : this.internalValue[0]);
+      return this.multiple ? utils_deepClone(this.internalValue) : this.internalValue.length === 0 ? null : utils_deepClone(Object.prototype.hasOwnProperty.call(this.internalValue[0], this.trackBy) ? this.internalValue[0][this.trackBy] : this.internalValue[0]);
     },
 
     /**
@@ -4116,22 +4260,25 @@ var flow = function flow() {
      * @returns {Array} returns the internal value
      */
     getInternalValue: function getInternalValue(value) {
-      return value === null || value === undefined ? [] : this.multiple ? deepClone(value) : deepClone(this.transformLocalValue(value) ? [this.transformLocalValue(value)] : []);
+      return value === null || value === undefined ? [] : this.multiple ? utils_deepClone(value) : utils_deepClone(this.transformLocalValue(value) ? [this.transformLocalValue(value)] : []);
     },
+
+    /**
+     * Returns the equivalent option of the received value
+     * @param {Object|String} current value
+     * @returns {Object}
+     */
     transformLocalValue: function transformLocalValue(value) {
-      var _ref3;
+      var _this5 = this,
+          _ref3;
 
-      if (isArray(this.options)) {
-        for (var i = 0; i < this.options.length; i++) {
-          var item = this.options[i];
-
-          if (item === value || isObject(value) && isObject(item) && value[this.trackBy] === item[this.trackBy] || isObject(item) && value === item[this.trackBy]) {
-            return item;
-          }
+      return (this.options || []).find(function (item) {
+        if (item === value || isObject(value) && isObject(item) && value[_this5.trackBy] === item[_this5.trackBy] || isObject(item) && value === item[_this5.trackBy]) {
+          return true;
         }
-      }
 
-      return _ref3 = {}, _defineProperty(_ref3, this.trackBy, ''), _defineProperty(_ref3, this.label, ''), _ref3;
+        return false;
+      }) || (_ref3 = {}, _defineProperty(_ref3, this.trackBy, ''), _defineProperty(_ref3, this.label, ''), _ref3);
     },
 
     /**
@@ -4247,7 +4394,7 @@ var flow = function flow() {
           this.internalValue = [option];
         }
 
-        this.$emit('select', deepClone(option), this.id);
+        this.$emit('select', utils_deepClone(option), this.id);
         this.$emit('input', this.getValue(), this.id);
         /* istanbul ignore else */
 
@@ -4282,7 +4429,7 @@ var flow = function flow() {
       var index = typeof_typeof(option) === 'object' ? this.valueKeys.indexOf(option[this.trackBy]) : this.valueKeys.indexOf(option);
       this.internalValue.splice(index, 1);
       this.$emit('input', this.getValue(), this.id);
-      this.$emit('remove', deepClone(option), this.id);
+      this.$emit('remove', utils_deepClone(option), this.id);
       /* istanbul ignore else */
 
       if (this.closeOnSelect && shouldClose) this.deactivate();
@@ -4309,12 +4456,12 @@ var flow = function flow() {
      * Sets this.internalValue to []
      */
     removeAll: function removeAll() {
-      var _this5 = this;
+      var _this6 = this;
 
-      var vals = deepClone(this.internalValue);
+      var vals = utils_deepClone(this.internalValue);
       this.internalValue = [];
       vals.forEach(function (v) {
-        _this5.$emit('remove', deepClone(v), _this5.id);
+        _this6.$emit('remove', utils_deepClone(v), _this6.id);
       });
       this.$emit('input', this.getValue(), this.id);
       if (this.closeOnSelect && !this.multiple) this.deactivate();
@@ -4359,7 +4506,12 @@ var flow = function flow() {
      * @property {Boolean} isOpen indicates if dropdown is open
      */
     toggle: function toggle() {
-      this.isOpen ? this.deactivate() : this.activate();
+      if (this.isOpen) {
+        this.deactivate();
+        return;
+      }
+
+      this.activate();
     },
 
     /**
@@ -4390,6 +4542,28 @@ var flow = function flow() {
     handleTouchStartStop: function handleTouchStartStop(index, option) {
       this.pointerSet(index);
       this.select(option);
+    }
+  },
+  watch: {
+    options: function options() {
+      this.internalValue = this.getInternalValue(this.value);
+    },
+    isOpen: function isOpen(val) {
+      this.$nextTick(this.setWrapperPos);
+      this.internalPlaceholder = val && this.currentOptionLabel ? this.currentOptionLabel : this.placeholder;
+    },
+    value: function value(_value) {
+      this.internalValue = this.getInternalValue(_value);
+    },
+    internalValue: function internalValue() {
+      /* istanbul ignore else */
+      if (this.resetAfter && this.internalValue.length) {
+        this.search = '';
+        this.internalValue = [];
+      }
+    },
+    search: function search() {
+      this.$emit('search-change', this.search, this.id);
     }
   }
 });
@@ -4673,12 +4847,26 @@ var flow = function flow() {
 //
 //
 //
+//
+//
+//
+//
 
 
 /* harmony default export */ var vue_multiselectvue_type_script_lang_js_ = ({
   name: 'vue-multiselect',
   mixins: [multiselectMixin, pointerMixin],
   props: {
+    /**
+     * css to be aplied in both .multiselect divs
+     * @default ''
+     * @type {String}
+     */
+    css: {
+      type: String,
+      default: ''
+    },
+
     /**
      * name attribute to match optional label element
      * @default ''
@@ -4746,7 +4934,7 @@ var flow = function flow() {
      */
     maxHeight: {
       type: Number,
-      default: 300
+      default: 40 * 6.5
     },
 
     /**
@@ -4808,7 +4996,7 @@ var flow = function flow() {
   },
   data: function data() {
     return {
-      internalValue: this.getInternalValue(this.value),
+      internalValue: this.firstValue || this.getInternalValue(this.value),
       contentContainer: null,
       internalPlaceholder: this.placeholder
     };
@@ -4881,15 +5069,6 @@ var flow = function flow() {
         var scrollTop = this.contentContainer.scrollTop;
         this.$emit('scrollEnd', scrollTop + containerHeight >= height);
       }
-    }
-  },
-  watch: {
-    options: function options() {
-      this.internalValue = this.getInternalValue(this.value);
-    },
-    isOpen: function isOpen(val) {
-      this.$nextTick(this.setWrapperPos);
-      this.internalPlaceholder = val && this.currentOptionLabel ? this.currentOptionLabel : this.placeholder;
     }
   }
 });

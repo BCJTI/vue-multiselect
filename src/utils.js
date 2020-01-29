@@ -3,7 +3,7 @@
  * Copied from Vuex.
  * @type {Object}
  */
-export default function deepClone(obj) {
+export const deepClone = (obj) => {
   if (Array.isArray(obj)) {
     return obj.map(deepClone);
   } if (obj && typeof obj === 'object') {
@@ -16,4 +16,16 @@ export default function deepClone(obj) {
     return cloned;
   }
   return obj;
-}
+};
+
+/**
+ *
+ * @param value
+ * @returns {boolean}
+ */
+export const isArray = value =>
+  Object.prototype.toString.call(value) === '[object Array]';
+
+
+export const isObject = value =>
+  Object.prototype.toString.call(value) === '[object Object]';
