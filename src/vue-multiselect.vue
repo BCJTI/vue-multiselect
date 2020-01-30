@@ -540,7 +540,6 @@
 		line-height: 5px;
 		text-decoration: none;
 		text-align: center;
-		transition: transform 0.2s ease;
 	}
 
 	.multiselect__select:before {
@@ -550,9 +549,10 @@
 		border-style: solid;
 		border-width: 5px 5px 0 5px;
 		border-color: #999999 transparent transparent transparent;
+		transition: transform 0.2s ease;
 	}
 
-	.multiselect__select.open {
+	.multiselect__select.open:before {
 		transform: rotate(180deg);
 	}
 
