@@ -550,12 +550,16 @@ export default {
 		 * Converts the external value to the internal value
 		 * @returns {Array} returns the internal value
 		 */
-		getInternalValue(value) {
+		getInternalValue(value, defaultVal) {
 			return value === null || value === undefined
 				? []
 				: this.multiple
 					? deepClone(value)
-					: deepClone(this.transformLocalValue(value) ? [this.transformLocalValue(value)] : []);
+					: deepClone(
+							defaultVal instanceof Array
+								? defaultVal.map(v => this.transformLocalValue(v, v))
+								: [this.transformLocalValue(value, defaultVal)],
+						);
 		},
 
 		/**
@@ -563,7 +567,7 @@ export default {
 		 * @param {Object|String} current value
 		 * @returns {Object}
 		 */
-		transformLocalValue(value) {
+		transformLocalValue(value, defaultVal) {
 			return (this.options || [])
 				.find((item) => {
 					if (item === value
@@ -575,6 +579,7 @@ export default {
 
 					return false;
 				})
+				|| defaultVal
 				|| { [this.trackBy]: '', [this.label]: '' };
 		},
 
@@ -836,7 +841,7 @@ export default {
 
 	watch: {
 		options() {
-			this.internalValue = this.getInternalValue(this.value);
+			this.internalValue = this.getInternalValue(this.value, this.internalValue);
 		},
 
 		isOpen(val) {

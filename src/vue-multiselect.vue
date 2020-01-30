@@ -47,12 +47,14 @@
 		<slot name="clear" :search="search"></slot>
 
 		<transition name="multiselect__loading">
-			<slot name="loading">
-				<div v-show="loading" class="multiselect__spinner"></div>
-			</slot>
+			<div>
+				<slot name="loading">
+					<div v-show="loading" class="multiselect__spinner"></div>
+				</slot>
+			</div>
 		</transition>
 
-		<slot name="carret" v-if="placeholder === internalPlaceholder">
+		<slot name="carret">
 			<div class="multiselect__select"></div>
 		</slot>
 
@@ -71,7 +73,7 @@
 					@keydown.delete.stop="removeLastElement()"
 			>
 				<div v-if="searchable" class="multiselect" :class="css">
-					<div class="multiselect__tags multiselect__content__input" :class="{'custom-placeholder': placeholder !== internalPlaceholder}">
+					<div class="multiselect__tags">
 						<input
 								ref="search"
 								:name="name + '-input'"
@@ -87,8 +89,10 @@
 						/>
 					</div>
 
-					<slot name="carret" v-if="placeholder === internalPlaceholder">
-						<div @mousedown.prevent="toggle()" class="multiselect__select"></div>
+					<div v-if="placeholder !== internalPlaceholder" class="custom-placeholder">Tab<br/>to select</div>
+
+					<slot name="carret">
+						<div @mousedown.prevent="toggle()" class="multiselect__select open"></div>
 					</slot>
 				</div>
 
@@ -273,10 +277,14 @@
 
 		data() {
 			return {
-				internalValue: this.firstValue || this.getInternalValue(this.value),
+				internalValue: null,
 				contentContainer: null,
 				internalPlaceholder: this.placeholder,
 			};
+		},
+
+		created() {
+			this.internalValue = this.getInternalValue(this.value, this.firstValue);
 		},
 
 		mounted() {
@@ -378,7 +386,7 @@
 	.multiselect {
 		outline: none;
 		display: flex;
-		align-items: center;
+		align-items: stretch;
 		position: relative;
 		width: 100%;
 		min-height: 40px;
@@ -387,6 +395,11 @@
 		border-radius: 5px;
 		border: 1px solid #E8E8E8;
 		background-color: #FFFFFF;
+	}
+
+	.multiselect > * {
+		display: flex;
+		align-items: center;
 	}
 
 	.multiselect:focus,
@@ -448,6 +461,7 @@
 	}
 
 	.multiselect__tags {
+		position: relative;
 		width: 100%;
 		padding: 0 0 0 12px;
 		text-overflow: ellipsis;
@@ -520,15 +534,12 @@
 	.multiselect__select {
 		flex-shrink: 0;
 		cursor: pointer;
-		display: block;
-		width: 35px;
 		margin: 0;
-		padding: 0 12px;
+		padding: 0 12px 0 6px;
 		border-radius: 50%;
 		line-height: 5px;
 		text-decoration: none;
 		text-align: center;
-		display: inline-block;
 		transition: transform 0.2s ease;
 	}
 
@@ -541,13 +552,17 @@
 		border-color: #999999 transparent transparent transparent;
 	}
 
+	.multiselect__select.open {
+		transform: rotate(180deg);
+	}
+
 	.multiselect__spinner {
 		position: relative;
 		flex-shrink: 0;
 		display: block;
     width: 22px;
     height: 22px;
-    margin-left: 12px;
+    margin-left: 6px;
 		border-radius: 50%;
 	}
 
@@ -776,13 +791,9 @@
 		display: inline-block
 	}
 
-	.custom-placeholder:after {
-		content: 'Tab \A to select';
+	.custom-placeholder {
 		white-space: pre;
-		position: absolute;
-		top: 0;
-		right: 0;
-		padding: 5px;
+		padding-left: 5px;
 		font-size: 10px;
 		text-align: right;
 	}
