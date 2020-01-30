@@ -1,7 +1,7 @@
 <template>
 	<div
 			:tabindex="disabled || (searchable && isOpen) ? -1 : tabindex"
-			:class="{ 'multiselect--disabled': disabled, [css]: !!css, }"
+			:class="[{ 'multiselect--disabled': disabled }, css]"
 			:name="name"
 			:id="id"
 			@click="activate()"
@@ -108,7 +108,7 @@
 							<span
 									v-if="!(option && (option.$isLabel || option.$isDisabled))"
 									:class="optionHighlight(index, option)"
-									@mousedown.stop="select(option)"
+									@click.stop="select(option)"
 									@mouseenter.self="pointerSet(index)"
 									:data-select="option && option.isTag ? tagPlaceholder : selectLabelText"
 									:data-selected="selectedLabelText"
@@ -279,7 +279,6 @@
 			return {
 				internalValue: null,
 				contentContainer: null,
-				internalPlaceholder: this.placeholder,
 			};
 		},
 

@@ -710,6 +710,28 @@ module.exports = function (it) {
 
 /***/ }),
 
+/***/ "20d6":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+// 22.1.3.9 Array.prototype.findIndex(predicate, thisArg = undefined)
+var $export = __webpack_require__("5ca1");
+var $find = __webpack_require__("0a49")(6);
+var KEY = 'findIndex';
+var forced = true;
+// Shouldn't skip holes
+if (KEY in []) Array(1)[KEY](function () { forced = false; });
+$export($export.P + $export.F * forced, 'Array', {
+  findIndex: function findIndex(callbackfn /* , that = undefined */) {
+    return $find(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+  }
+});
+__webpack_require__("9c6c")(KEY);
+
+
+/***/ }),
+
 /***/ "20fd":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3491,17 +3513,18 @@ if (typeof window !== 'undefined') {
 // Indicate to webpack that this file can be concatenated
 /* harmony default export */ var setPublicPath = (null);
 
-// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"dabde93c-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/vue-multiselect.vue?vue&type=template&id=1b6705a2&
-var render = function () {
-var _obj;
-var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"multiselect",class:( _obj = { 'multiselect--disabled': _vm.disabled }, _obj[_vm.css] = !!_vm.css, _obj ),attrs:{"tabindex":_vm.disabled || (_vm.searchable && _vm.isOpen) ? -1 : _vm.tabindex,"name":_vm.name,"id":_vm.id},on:{"click":function($event){return _vm.activate()},"keypress":_vm.startTyping,"keydown":[function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"space",32,$event.key,[" ","Spacebar"])&&_vm._k($event.keyCode,"enter",13,$event.key,"Enter")){ return null; }$event.preventDefault();return _vm.activate()},function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"down",40,$event.key,["Down","ArrowDown"])){ return null; }if($event.target !== $event.currentTarget){ return null; }$event.preventDefault();return _vm.pointerForward()},function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"up",38,$event.key,["Up","ArrowUp"])){ return null; }if($event.target !== $event.currentTarget){ return null; }$event.preventDefault();return _vm.pointerBackward()}]}},[_c('div',{ref:"tags",staticClass:"multiselect__tags"},[_c('div',{directives:[{name:"show",rawName:"v-show",value:(_vm.visibleValue.length > 0),expression:"visibleValue.length > 0"}],staticClass:"multiselect__tags-wrap"},[_vm._l((_vm.visibleValue),function(option){return [_vm._t("tag",[_c('span',{staticClass:"multiselect__tag"},[_c('span',{domProps:{"textContent":_vm._s(_vm.getOptionLabel(option))}}),_c('i',{staticClass:"multiselect__tag-icon",attrs:{"aria-hidden":"true","tabindex":"1"},on:{"keydown":function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"enter",13,$event.key,"Enter")){ return null; }$event.preventDefault();return _vm.removeElement(option)},"mousedown":function($event){$event.preventDefault();return _vm.removeElement(option)}}})])],{"option":option,"search":_vm.search,"remove":_vm.removeElement})]})],2),(_vm.internalValue && _vm.internalValue.length > _vm.limit)?[_c('strong',{staticClass:"multiselect__strong",domProps:{"textContent":_vm._s(_vm.limitText(_vm.internalValue.length - _vm.limit))}})]:_vm._e(),_c('span',{staticClass:"multiselect__single",attrs:{"title":_vm.currentOptionLabel || _vm.internalPlaceholder}},[(_vm.currentOptionLabel)?_vm._t("singleLabel",[[_vm._v(_vm._s(_vm.currentOptionLabel))]],{"option":_vm.currentOptionLabel}):[_vm._v(_vm._s(_vm.internalPlaceholder))]],2)],2),_vm._t("clear",null,{"search":_vm.search}),_c('transition',{attrs:{"name":"multiselect__loading"}},[_c('div',[_vm._t("loading",[_c('div',{directives:[{name:"show",rawName:"v-show",value:(_vm.loading),expression:"loading"}],staticClass:"multiselect__spinner"})])],2)]),_vm._t("carret",[_c('div',{staticClass:"multiselect__select"})]),_c('transition',{attrs:{"name":"multiselect"}},[(_vm.isOpen)?_c('div',{ref:"listWrapper",staticClass:"multiselect__content-wrapper",class:{ above: _vm.isAbove },style:({ width: _vm.selectWidth }),on:{"mousedown":function($event){$event.preventDefault();$event.stopPropagation();},"keydown":[function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"tab",9,$event.key,"Tab")&&_vm._k($event.keyCode,"esc",27,$event.key,["Esc","Escape"])){ return null; }return _vm.deactivate()},function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"down",40,$event.key,["Down","ArrowDown"])){ return null; }$event.preventDefault();return _vm.pointerForward()},function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"up",38,$event.key,["Up","ArrowUp"])){ return null; }$event.preventDefault();return _vm.pointerBackward()},function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"enter",13,$event.key,"Enter")){ return null; }$event.preventDefault();$event.stopPropagation();return _vm.addPointerElement($event)},function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"delete",[8,46],$event.key,["Backspace","Delete","Del"])){ return null; }$event.stopPropagation();return _vm.removeLastElement()}]}},[(_vm.searchable)?_c('div',{staticClass:"multiselect",class:_vm.css},[_c('div',{staticClass:"multiselect__tags"},[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.search),expression:"search"}],ref:"search",staticClass:"multiselect__input",style:(_vm.inputStyle),attrs:{"name":_vm.name + '-input',"id":_vm.id + '-input',"type":"text","autocomplete":"off","placeholder":_vm.internalPlaceholder,"disabled":_vm.disabled,"tabindex":_vm.tabindex},domProps:{"value":(_vm.search)},on:{"input":function($event){if($event.target.composing){ return; }_vm.search=$event.target.value}}})]),(_vm.placeholder !== _vm.internalPlaceholder)?_c('div',{staticClass:"custom-placeholder"},[_vm._v("Tab"),_c('br'),_vm._v("to select")]):_vm._e(),_vm._t("carret",[_c('div',{staticClass:"multiselect__select open",on:{"mousedown":function($event){$event.preventDefault();return _vm.toggle()}}})])],2):_vm._e(),_c('ul',{ref:"list",staticClass:"multiselect__content",class:{ 'full-border': !_vm.searchable },style:({ maxHeight: _vm.optimizedHeight + 'px' })},[_vm._t("beforeList"),(_vm.multiple && _vm.max === _vm.internalValue.length)?_c('li',[_c('span',{staticClass:"multiselect__option"},[_vm._t("maxElements",[_vm._v("Maximum of "+_vm._s(_vm.max)+" options selected. First remove a selected option to select another.")])],2)]):_vm._l((_vm.filteredOptions),function(option,index){return _c('li',{key:index,staticClass:"multiselect__element",attrs:{"title":_vm.getOptionLabel(option)}},[(!(option && (option.$isLabel || option.$isDisabled)))?_c('span',{staticClass:"multiselect__option",class:_vm.optionHighlight(index, option),attrs:{"data-select":option && option.isTag ? _vm.tagPlaceholder : _vm.selectLabelText,"data-selected":_vm.selectedLabelText},on:{"mousedown":function($event){$event.stopPropagation();return _vm.select(option)},"mouseenter":function($event){if($event.target !== $event.currentTarget){ return null; }return _vm.pointerSet(index)}}},[_vm._t("option",[_c('span',[_vm._v(_vm._s(_vm.getOptionLabel(option)))])],{"option":option,"search":_vm.search})],2):_vm._e(),(option && (option.$isLabel || option.$isDisabled))?_c('span',{staticClass:"multiselect__option multiselect__option--disabled",class:_vm.optionHighlight(index, option)},[_vm._t("option",[_c('span',[_vm._v(_vm._s(_vm.getOptionLabel(option)))])],{"option":option,"search":_vm.search})],2):_vm._e()])}),_c('li',{directives:[{name:"show",rawName:"v-show",value:(_vm.showNoResults && (_vm.filteredOptions.length === 0 && _vm.search && !_vm.loading)),expression:"showNoResults && (filteredOptions.length === 0 && search && !loading)"}]},[_c('span',{staticClass:"multiselect__option"},[_vm._t("noResult",[_vm._v("No elements found. Consider changing the search query.")])],2)]),_vm._t("afterList")],2)]):_vm._e()])],2)}
+// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"dabde93c-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/vue-multiselect.vue?vue&type=template&id=00346fa0&
+var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"multiselect",class:[{ 'multiselect--disabled': _vm.disabled }, _vm.css],attrs:{"tabindex":_vm.disabled || (_vm.searchable && _vm.isOpen) ? -1 : _vm.tabindex,"name":_vm.name,"id":_vm.id},on:{"click":function($event){return _vm.activate()},"keypress":_vm.startTyping,"keydown":[function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"space",32,$event.key,[" ","Spacebar"])&&_vm._k($event.keyCode,"enter",13,$event.key,"Enter")){ return null; }$event.preventDefault();return _vm.activate()},function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"down",40,$event.key,["Down","ArrowDown"])){ return null; }if($event.target !== $event.currentTarget){ return null; }$event.preventDefault();return _vm.pointerForward()},function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"up",38,$event.key,["Up","ArrowUp"])){ return null; }if($event.target !== $event.currentTarget){ return null; }$event.preventDefault();return _vm.pointerBackward()}]}},[_c('div',{ref:"tags",staticClass:"multiselect__tags"},[_c('div',{directives:[{name:"show",rawName:"v-show",value:(_vm.visibleValue.length > 0),expression:"visibleValue.length > 0"}],staticClass:"multiselect__tags-wrap"},[_vm._l((_vm.visibleValue),function(option){return [_vm._t("tag",[_c('span',{staticClass:"multiselect__tag"},[_c('span',{domProps:{"textContent":_vm._s(_vm.getOptionLabel(option))}}),_c('i',{staticClass:"multiselect__tag-icon",attrs:{"aria-hidden":"true","tabindex":"1"},on:{"keydown":function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"enter",13,$event.key,"Enter")){ return null; }$event.preventDefault();return _vm.removeElement(option)},"mousedown":function($event){$event.preventDefault();return _vm.removeElement(option)}}})])],{"option":option,"search":_vm.search,"remove":_vm.removeElement})]})],2),(_vm.internalValue && _vm.internalValue.length > _vm.limit)?[_c('strong',{staticClass:"multiselect__strong",domProps:{"textContent":_vm._s(_vm.limitText(_vm.internalValue.length - _vm.limit))}})]:_vm._e(),_c('span',{staticClass:"multiselect__single",attrs:{"title":_vm.currentOptionLabel || _vm.internalPlaceholder}},[(_vm.currentOptionLabel)?_vm._t("singleLabel",[[_vm._v(_vm._s(_vm.currentOptionLabel))]],{"option":_vm.currentOptionLabel}):[_vm._v(_vm._s(_vm.internalPlaceholder))]],2)],2),_vm._t("clear",null,{"search":_vm.search}),_c('transition',{attrs:{"name":"multiselect__loading"}},[_c('div',[_vm._t("loading",[_c('div',{directives:[{name:"show",rawName:"v-show",value:(_vm.loading),expression:"loading"}],staticClass:"multiselect__spinner"})])],2)]),_vm._t("carret",[_c('div',{staticClass:"multiselect__select"})]),_c('transition',{attrs:{"name":"multiselect"}},[(_vm.isOpen)?_c('div',{ref:"listWrapper",staticClass:"multiselect__content-wrapper",class:{ above: _vm.isAbove },style:({ width: _vm.selectWidth }),on:{"mousedown":function($event){$event.preventDefault();$event.stopPropagation();},"keydown":[function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"tab",9,$event.key,"Tab")&&_vm._k($event.keyCode,"esc",27,$event.key,["Esc","Escape"])){ return null; }return _vm.deactivate()},function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"down",40,$event.key,["Down","ArrowDown"])){ return null; }$event.preventDefault();return _vm.pointerForward()},function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"up",38,$event.key,["Up","ArrowUp"])){ return null; }$event.preventDefault();return _vm.pointerBackward()},function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"enter",13,$event.key,"Enter")){ return null; }$event.preventDefault();$event.stopPropagation();return _vm.addPointerElement($event)},function($event){if(!$event.type.indexOf('key')&&_vm._k($event.keyCode,"delete",[8,46],$event.key,["Backspace","Delete","Del"])){ return null; }$event.stopPropagation();return _vm.removeLastElement()}]}},[(_vm.searchable)?_c('div',{staticClass:"multiselect",class:_vm.css},[_c('div',{staticClass:"multiselect__tags"},[_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.search),expression:"search"}],ref:"search",staticClass:"multiselect__input",style:(_vm.inputStyle),attrs:{"name":_vm.name + '-input',"id":_vm.id + '-input',"type":"text","autocomplete":"off","placeholder":_vm.internalPlaceholder,"disabled":_vm.disabled,"tabindex":_vm.tabindex},domProps:{"value":(_vm.search)},on:{"input":function($event){if($event.target.composing){ return; }_vm.search=$event.target.value}}})]),(_vm.placeholder !== _vm.internalPlaceholder)?_c('div',{staticClass:"custom-placeholder"},[_vm._v("Tab"),_c('br'),_vm._v("to select")]):_vm._e(),_vm._t("carret",[_c('div',{staticClass:"multiselect__select open",on:{"mousedown":function($event){$event.preventDefault();return _vm.toggle()}}})])],2):_vm._e(),_c('ul',{ref:"list",staticClass:"multiselect__content",class:{ 'full-border': !_vm.searchable },style:({ maxHeight: _vm.optimizedHeight + 'px' })},[_vm._t("beforeList"),(_vm.multiple && _vm.max === _vm.internalValue.length)?_c('li',[_c('span',{staticClass:"multiselect__option"},[_vm._t("maxElements",[_vm._v("Maximum of "+_vm._s(_vm.max)+" options selected. First remove a selected option to select another.")])],2)]):_vm._l((_vm.filteredOptions),function(option,index){return _c('li',{key:index,staticClass:"multiselect__element",attrs:{"title":_vm.getOptionLabel(option)}},[(!(option && (option.$isLabel || option.$isDisabled)))?_c('span',{staticClass:"multiselect__option",class:_vm.optionHighlight(index, option),attrs:{"data-select":option && option.isTag ? _vm.tagPlaceholder : _vm.selectLabelText,"data-selected":_vm.selectedLabelText},on:{"click":function($event){$event.stopPropagation();return _vm.select(option)},"mouseenter":function($event){if($event.target !== $event.currentTarget){ return null; }return _vm.pointerSet(index)}}},[_vm._t("option",[_c('span',[_vm._v(_vm._s(_vm.getOptionLabel(option)))])],{"option":option,"search":_vm.search})],2):_vm._e(),(option && (option.$isLabel || option.$isDisabled))?_c('span',{staticClass:"multiselect__option multiselect__option--disabled",class:_vm.optionHighlight(index, option)},[_vm._t("option",[_c('span',[_vm._v(_vm._s(_vm.getOptionLabel(option)))])],{"option":option,"search":_vm.search})],2):_vm._e()])}),_c('li',{directives:[{name:"show",rawName:"v-show",value:(_vm.showNoResults && (_vm.filteredOptions.length === 0 && _vm.search && !_vm.loading)),expression:"showNoResults && (filteredOptions.length === 0 && search && !loading)"}]},[_c('span',{staticClass:"multiselect__option"},[_vm._t("noResult",[_vm._v("No elements found. Consider changing the search query.")])],2)]),_vm._t("afterList")],2)]):_vm._e()])],2)}
 var staticRenderFns = []
 
 
-// CONCATENATED MODULE: ./src/vue-multiselect.vue?vue&type=template&id=1b6705a2&
+// CONCATENATED MODULE: ./src/vue-multiselect.vue?vue&type=template&id=00346fa0&
 
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es6.number.constructor.js
 var es6_number_constructor = __webpack_require__("c5f6");
+
+// EXTERNAL MODULE: ./node_modules/core-js/modules/es6.array.find-index.js
+var es6_array_find_index = __webpack_require__("20d6");
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime-corejs2/core-js/symbol/iterator.js
 var iterator = __webpack_require__("5d58");
@@ -3652,6 +3675,7 @@ var isObject = function isObject(value) {
   return Object.prototype.toString.call(value) === '[object Object]';
 };
 // CONCATENATED MODULE: ./src/multiselectMixin.js
+
 
 
 
@@ -4101,6 +4125,9 @@ var flow = function flow() {
     currentOptionLabel: function currentOptionLabel() {
       return this.multiple ? null : this.internalValue.length ? this.getOptionLabel(this.internalValue[0]) : null;
     },
+    internalPlaceholder: function internalPlaceholder() {
+      return this.isOpen && this.currentOptionLabel ? this.currentOptionLabel : this.placeholder;
+    },
     isAbove: function isAbove() {
       if (this.openDirection === 'above' || this.openDirection === 'top') {
         return true;
@@ -4476,9 +4503,16 @@ var flow = function flow() {
      * Sets this.isOpen to TRUE
      */
     activate: function activate() {
+      var _this8 = this;
+
       /* istanbul ignore else */
       if (this.isOpen || this.disabled) return;
       this.adjustPosition();
+      var lastSelectedId = (this.internalValue[this.internalValue.length - 1] || {})[this.trackBy];
+      var lsIndex = this.filteredOptions.findIndex(function (v) {
+        return v[_this8.trackBy] === lastSelectedId;
+      });
+      this.pointer = Math.max(0, lsIndex);
       /* istanbul ignore else  */
 
       if (this.groupValues && this.pointer === 0 && this.filteredOptions.length) {
@@ -4552,9 +4586,8 @@ var flow = function flow() {
     options: function options() {
       this.internalValue = this.getInternalValue(this.value, this.internalValue);
     },
-    isOpen: function isOpen(val) {
+    isOpen: function isOpen() {
       this.$nextTick(this.setWrapperPos);
-      this.internalPlaceholder = val && this.currentOptionLabel ? this.currentOptionLabel : this.placeholder;
     },
     value: function value(_value) {
       this.internalValue = this.getInternalValue(_value);
@@ -5005,8 +5038,7 @@ var flow = function flow() {
   data: function data() {
     return {
       internalValue: null,
-      contentContainer: null,
-      internalPlaceholder: this.placeholder
+      contentContainer: null
     };
   },
   created: function created() {

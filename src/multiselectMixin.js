@@ -393,6 +393,11 @@ export default {
 					? this.getOptionLabel(this.internalValue[0])
 					: null;
 		},
+
+		internalPlaceholder() {
+			return this.isOpen && this.currentOptionLabel ? this.currentOptionLabel : this.placeholder;
+		},
+
 		isAbove() {
 			if (this.openDirection === 'above' || this.openDirection === 'top') {
 				return true;
@@ -769,6 +774,11 @@ export default {
 			if (this.isOpen || this.disabled) return;
 
 			this.adjustPosition();
+
+			const lastValId = (this.internalValue[this.internalValue.length - 1] || {})[this.trackBy];
+			const lsIndex = lastValId && this.filteredOptions.findIndex(v => v[this.trackBy] === lastValId);
+			this.pointer = Math.max(0, lsIndex);
+
 			/* istanbul ignore else  */
 			if (this.groupValues && this.pointer === 0 && this.filteredOptions.length) {
 				this.pointer = 1;
@@ -844,9 +854,8 @@ export default {
 			this.internalValue = this.getInternalValue(this.value, this.internalValue);
 		},
 
-		isOpen(val) {
+		isOpen() {
 			this.$nextTick(this.setWrapperPos);
-			this.internalPlaceholder = val && this.currentOptionLabel ? this.currentOptionLabel : this.placeholder;
 		},
 
 		value(value) {
