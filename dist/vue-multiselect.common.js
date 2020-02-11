@@ -4499,9 +4499,9 @@ var flow = function flow() {
       /* istanbul ignore else */
       if (this.isOpen || this.disabled) return;
       this.adjustPosition();
-      var lastSelectedId = (this.internalValue[this.internalValue.length - 1] || {})[this.trackBy];
+      var lastValId = (this.internalValue[this.internalValue.length - 1] || {})[this.trackBy];
       var lsIndex = this.filteredOptions.findIndex(function (v) {
-        return v[_this8.trackBy] === lastSelectedId;
+        return v[_this8.trackBy] === lastValId;
       });
       this.pointer = Math.max(0, lsIndex);
       /* istanbul ignore else  */

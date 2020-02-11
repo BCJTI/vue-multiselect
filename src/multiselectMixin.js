@@ -776,7 +776,7 @@ export default {
 			this.adjustPosition();
 
 			const lastValId = (this.internalValue[this.internalValue.length - 1] || {})[this.trackBy];
-			const lsIndex = lastValId && this.filteredOptions.findIndex(v => v[this.trackBy] === lastValId);
+			const lsIndex = this.filteredOptions.findIndex(v => v[this.trackBy] === lastValId);
 			this.pointer = Math.max(0, lsIndex);
 
 			/* istanbul ignore else  */
