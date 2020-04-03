@@ -836,6 +836,14 @@ export default {
 				this.optimizedHeight = Math.min(spaceAbove - 40, this.maxHeight);
 			}
 		},
+
+		checkListScroll() {
+			const { list } = this.$refs;
+
+			console.log(list.scrollTop, list.scrollHeight);
+			// this.$emit('scrollEnd');
+		},
+
 		/**
 		 * Handles the touchstart stop propagation.
 		 * Selects an option on mobile devices with one click

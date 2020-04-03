@@ -96,7 +96,13 @@
 					</slot>
 				</div>
 
-				<ul ref="list" class="multiselect__content" :class="{ 'full-border': !searchable }" :style="{ maxHeight: optimizedHeight + 'px' }">
+				<ul
+					ref="list"
+					class="multiselect__content"
+					:class="{ 'full-border': !searchable }"
+					:style="{ maxHeight: optimizedHeight + 'px' }"
+					@scroll="checkListScroll"
+				>
 					<slot name="beforeList"></slot>
 					<li v-if="multiple && max === internalValue.length">
 						<span class="multiselect__option">
