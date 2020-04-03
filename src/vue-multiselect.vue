@@ -288,10 +288,6 @@
 			};
 		},
 
-		created() {
-			this.internalValue = this.getInternalValue(this.value, this.firstValue);
-		},
-
 		mounted() {
 			this.contentContainer = this.$el ? this.$el.querySelector('.multiselect__content-wrapper') : null;
 			if (this.contentContainer) this.contentContainer.addEventListener('wheel', this.scrollContent);

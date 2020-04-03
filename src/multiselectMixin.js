@@ -69,9 +69,7 @@ export default {
 			isOpen: false,
 			prefferedOpenDirection: 'below',
 			optimizedHeight: this.maxHeight,
-			internalValue: this.value || this.value === 0
-				? deepClone(Array.isArray(this.value) ? this.value : [this.value])
-				: [],
+			internalValue: [],
 
 			updatePosTimeout: null,
 		};
@@ -555,16 +553,14 @@ export default {
 		 * Converts the external value to the internal value
 		 * @returns {Array} returns the internal value
 		 */
-		getInternalValue(value, defaultVal) {
+		getInternalValue(value, defaultVal = isEmpty(this.internalValue) ? this.firstValue : this.internalValue) {
 			return value === null || value === undefined
 				? []
-				: this.multiple
-					? deepClone(value)
-					: deepClone(
-							defaultVal instanceof Array
-								? defaultVal.map(v => this.transformLocalValue(v, v))
-								: [this.transformLocalValue(value, defaultVal)],
-						);
+				: deepClone(
+					defaultVal instanceof Array
+						? defaultVal.map(v => this.transformLocalValue(v, v))
+						: [this.transformLocalValue(value, defaultVal)],
+				);
 		},
 
 		/**
@@ -859,15 +855,25 @@ export default {
 
 	watch: {
 		options() {
-			this.internalValue = this.getInternalValue(this.value, this.internalValue);
+			this.internalValue = this.getInternalValue(this.value);
 		},
 
 		isOpen() {
 			this.$nextTick(this.setWrapperPos);
 		},
 
-		value(value) {
-			this.internalValue = this.getInternalValue(value);
+		value: {
+			immediate: true,
+			handler(value) {
+				this.internalValue = this.getInternalValue(value);
+			},
+		},
+
+		firstValue: {
+			immediate: true,
+			handler() {
+				this.internalValue = this.getInternalValue(this.value);
+			},
 		},
 
 		internalValue() {
