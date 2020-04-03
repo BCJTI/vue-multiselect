@@ -836,8 +836,9 @@ export default {
 		checkListScroll() {
 			const { list } = this.$refs;
 
-			console.log(list.scrollTop, list.scrollHeight);
-			// this.$emit('scrollEnd');
+			if (list.scrollTop + list.offsetHeight >= list.scrollHeight) {
+				this.$emit('scrollEnd');
+			}
 		},
 
 		/**
