@@ -4574,8 +4574,12 @@ var flow = function flow() {
     checkListScroll: function checkListScroll() {
       var list = this.$refs.list;
 
-      if (list.scrollTop + list.offsetHeight >= list.scrollHeight) {
-        this.$emit('scrollEnd');
+      if (list) {
+        var endLine = list.scrollHeight - list.scrollHeight * 0.2;
+
+        if (list.scrollTop + list.offsetHeight >= endLine) {
+          this.$emit('scrollEnd');
+        }
       }
     },
 
