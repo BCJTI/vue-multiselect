@@ -3526,33 +3526,6 @@ var es6_number_constructor = __webpack_require__("c5f6");
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es6.array.find-index.js
 var es6_array_find_index = __webpack_require__("20d6");
 
-// EXTERNAL MODULE: ./node_modules/@babel/runtime-corejs2/core-js/symbol/iterator.js
-var iterator = __webpack_require__("5d58");
-var iterator_default = /*#__PURE__*/__webpack_require__.n(iterator);
-
-// EXTERNAL MODULE: ./node_modules/@babel/runtime-corejs2/core-js/symbol.js
-var symbol = __webpack_require__("67bb");
-var symbol_default = /*#__PURE__*/__webpack_require__.n(symbol);
-
-// CONCATENATED MODULE: ./node_modules/@babel/runtime-corejs2/helpers/esm/typeof.js
-
-
-
-function typeof_typeof2(obj) { if (typeof symbol_default.a === "function" && typeof iterator_default.a === "symbol") { typeof_typeof2 = function _typeof2(obj) { return typeof obj; }; } else { typeof_typeof2 = function _typeof2(obj) { return obj && typeof symbol_default.a === "function" && obj.constructor === symbol_default.a && obj !== symbol_default.a.prototype ? "symbol" : typeof obj; }; } return typeof_typeof2(obj); }
-
-function typeof_typeof(obj) {
-  if (typeof symbol_default.a === "function" && typeof_typeof2(iterator_default.a) === "symbol") {
-    typeof_typeof = function _typeof(obj) {
-      return typeof_typeof2(obj);
-    };
-  } else {
-    typeof_typeof = function _typeof(obj) {
-      return obj && typeof symbol_default.a === "function" && obj.constructor === symbol_default.a && obj !== symbol_default.a.prototype ? "symbol" : typeof_typeof2(obj);
-    };
-  }
-
-  return typeof_typeof(obj);
-}
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es6.array.find.js
 var es6_array_find = __webpack_require__("7514");
 
@@ -3631,6 +3604,33 @@ var es6_regexp_to_string = __webpack_require__("6b54");
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es6.object.keys.js
 var es6_object_keys = __webpack_require__("456d");
 
+// EXTERNAL MODULE: ./node_modules/@babel/runtime-corejs2/core-js/symbol/iterator.js
+var iterator = __webpack_require__("5d58");
+var iterator_default = /*#__PURE__*/__webpack_require__.n(iterator);
+
+// EXTERNAL MODULE: ./node_modules/@babel/runtime-corejs2/core-js/symbol.js
+var symbol = __webpack_require__("67bb");
+var symbol_default = /*#__PURE__*/__webpack_require__.n(symbol);
+
+// CONCATENATED MODULE: ./node_modules/@babel/runtime-corejs2/helpers/esm/typeof.js
+
+
+
+function typeof_typeof2(obj) { if (typeof symbol_default.a === "function" && typeof iterator_default.a === "symbol") { typeof_typeof2 = function _typeof2(obj) { return typeof obj; }; } else { typeof_typeof2 = function _typeof2(obj) { return obj && typeof symbol_default.a === "function" && obj.constructor === symbol_default.a && obj !== symbol_default.a.prototype ? "symbol" : typeof obj; }; } return typeof_typeof2(obj); }
+
+function typeof_typeof(obj) {
+  if (typeof symbol_default.a === "function" && typeof_typeof2(iterator_default.a) === "symbol") {
+    typeof_typeof = function _typeof(obj) {
+      return typeof_typeof2(obj);
+    };
+  } else {
+    typeof_typeof = function _typeof(obj) {
+      return obj && typeof symbol_default.a === "function" && obj.constructor === symbol_default.a && obj !== symbol_default.a.prototype ? "symbol" : typeof_typeof2(obj);
+    };
+  }
+
+  return typeof_typeof(obj);
+}
 // CONCATENATED MODULE: ./src/utils.js
 
 
@@ -3675,7 +3675,6 @@ var isObject = function isObject(value) {
   return Object.prototype.toString.call(value) === '[object Object]';
 };
 // CONCATENATED MODULE: ./src/multiselectMixin.js
-
 
 
 
@@ -4104,22 +4103,14 @@ var flow = function flow() {
       return items;
     },
     valueKeys: function valueKeys() {
-      var _this = this;
-
-      if (this.trackBy) {
-        return this.internalValue.map(function (element) {
-          return element[_this.trackBy];
-        });
-      }
-
-      return this.internalValue;
+      return this.internalValue.map(this.getOptionValue);
     },
     optionKeys: function optionKeys() {
-      var _this2 = this;
+      var _this = this;
 
       var options = this.groupValues ? this.flatAndStrip(this.options) : this.options;
       return options.map(function (element) {
-        return _this2.customLabel(element, _this2.label).toString().toLowerCase();
+        return _this.customLabel(element, _this.label).toString().toLowerCase();
       });
     },
     currentOptionLabel: function currentOptionLabel() {
@@ -4187,7 +4178,7 @@ var flow = function flow() {
      * Appends the list wrapper on the found scrollableParent, or returns it to the original parent
      */
     setWrapperPos: function setWrapperPos() {
-      var _this3 = this;
+      var _this2 = this;
 
       var listWrapper = this.$refs.listWrapper;
       this.updatePos();
@@ -4209,7 +4200,6 @@ var flow = function flow() {
         // if (this.isAbove) {
         // 	listWrapper.classList.add('above');
         // 	listWrapper.style.top = 'auto';
-        // 	console.log(this.searchable);
         // 	listWrapper.style.bottom = this.searchable
         // 		? `${window.innerHeight - top + height}px`
         // 		: `${window.innerHeight - top}px`;
@@ -4222,7 +4212,7 @@ var flow = function flow() {
         if (this.searchable) {
           if (!this.preserveSearch) this.search = '';
           this.$nextTick(function () {
-            if (_this3.$refs.search) _this3.$refs.search.focus();
+            if (_this2.$refs.search) _this2.$refs.search.focus();
           });
         } else if (this.$el) this.$el.focus();
       } else if (this.parentWrapper && listWrapper) {
@@ -4234,30 +4224,30 @@ var flow = function flow() {
      * Updates listWrapper position based on $el rect
      */
     updatePos: function updatePos() {
-      var _this4 = this;
+      var _this3 = this;
 
       if (this.isOpen) {
         if (this.updatePosTimeout) clearTimeout(this.updatePosTimeout);
         this.updatePosTimeout = setTimeout(function () {
-          var listWrapper = _this4.$refs.listWrapper;
+          var listWrapper = _this3.$refs.listWrapper;
 
-          var _this4$$el$getBoundin = _this4.$el.getBoundingClientRect(),
-              top = _this4$$el$getBoundin.top,
-              bottom = _this4$$el$getBoundin.bottom,
-              left = _this4$$el$getBoundin.left,
-              width = _this4$$el$getBoundin.width;
+          var _this3$$el$getBoundin = _this3.$el.getBoundingClientRect(),
+              top = _this3$$el$getBoundin.top,
+              bottom = _this3$$el$getBoundin.bottom,
+              left = _this3$$el$getBoundin.left,
+              width = _this3$$el$getBoundin.width;
 
           listWrapper.style.width = "".concat(width, "px");
           listWrapper.style.left = "".concat(left, "px");
 
-          if (_this4.isAbove) {
+          if (_this3.isAbove) {
             listWrapper.classList.add('above');
             listWrapper.style.top = 'auto';
-            listWrapper.style.bottom = _this4.searchable ? "".concat(window.innerHeight - bottom, "px") : "".concat(window.innerHeight - top, "px");
+            listWrapper.style.bottom = _this3.searchable ? "".concat(window.innerHeight - bottom, "px") : "".concat(window.innerHeight - top, "px");
           } else {
             listWrapper.classList.remove('above');
             listWrapper.style.bottom = 'auto';
-            listWrapper.style.top = _this4.searchable ? "".concat(top, "px") : "".concat(bottom, "px");
+            listWrapper.style.top = _this3.searchable ? "".concat(top, "px") : "".concat(bottom, "px");
           }
         }, 0);
       }
@@ -4279,7 +4269,7 @@ var flow = function flow() {
      * @returns {Object||Array||String||Integer} returns the external value
      */
     getValue: function getValue() {
-      return this.multiple ? utils_deepClone(this.internalValue) : this.internalValue.length === 0 ? null : utils_deepClone(Object.prototype.hasOwnProperty.call(this.internalValue[0], this.trackBy) ? this.internalValue[0][this.trackBy] : this.internalValue[0]);
+      return utils_deepClone(this.multiple ? this.internalValue.map(this.getOptionValue) : this.getOptionValue(this.internalValue[0]) || null);
     },
 
     /**
@@ -4287,11 +4277,11 @@ var flow = function flow() {
      * @returns {Array} returns the internal value
      */
     getInternalValue: function getInternalValue(value) {
-      var _this5 = this;
+      var _this4 = this;
 
       var defaultVal = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : isEmpty(this.internalValue) ? this.firstValue : this.internalValue;
       return value === null || value === undefined ? [] : utils_deepClone(defaultVal instanceof Array ? defaultVal.map(function (v) {
-        return _this5.transformLocalValue(v, v);
+        return _this4.transformLocalValue(value, v);
       }) : [this.transformLocalValue(value, defaultVal)]);
     },
 
@@ -4301,15 +4291,11 @@ var flow = function flow() {
      * @returns {Object}
      */
     transformLocalValue: function transformLocalValue(value, defaultVal) {
-      var _this6 = this,
+      var _this5 = this,
           _ref3;
 
       return (this.options || []).find(function (item) {
-        if (item === value || isObject(value) && isObject(item) && value[_this6.trackBy] === item[_this6.trackBy] || isObject(item) && value === item[_this6.trackBy]) {
-          return true;
-        }
-
-        return false;
+        return _this5.getOptionValue(item) === _this5.getOptionValue(value);
       }) || defaultVal || (_ref3 = {}, _defineProperty(_ref3, this.trackBy, ''), _defineProperty(_ref3, this.label, ''), _ref3);
     },
 
@@ -4348,7 +4334,7 @@ var flow = function flow() {
      * @returns {Boolean} returns true if element is selected
      */
     isSelected: function isSelected(option) {
-      var opt = this.trackBy ? option[this.trackBy] : option;
+      var opt = this.getOptionValue(option);
       return this.valueKeys.indexOf(opt) > -1;
     },
 
@@ -4372,8 +4358,12 @@ var flow = function flow() {
      */
     getOptionLabel: function getOptionLabel(option) {
       /* istanbul ignore else */
-      if (isEmpty(option)) return '';
+      if (isEmpty(option)) {
+        if (!this.trackBy) return this.deselectLabelText;
+        return '';
+      }
       /* istanbul ignore else */
+
 
       if (option.isTag) return option.label;
       /* istanbul ignore else */
@@ -4384,6 +4374,9 @@ var flow = function flow() {
 
       if (isEmpty(label)) return '';
       return label;
+    },
+    getOptionValue: function getOptionValue(option) {
+      return this.trackBy && Object.prototype.hasOwnProperty.call(option || {}, this.trackBy) ? option[this.trackBy] : option;
     },
 
     /**
@@ -4416,7 +4409,7 @@ var flow = function flow() {
       if (key === 'Tab' && !this.pointerDirty) return;
 
       if (option.isTag) {
-        this.$emit('tag', option.label, this.id);
+        this.$emit('tag', this.getOptionLabel(option), this.id);
         this.search = '';
         if (this.closeOnSelect && !this.multiple) this.deactivate();
       } else {
@@ -4458,7 +4451,7 @@ var flow = function flow() {
         return;
       }
 
-      var index = typeof_typeof(option) === 'object' ? this.valueKeys.indexOf(option[this.trackBy]) : this.valueKeys.indexOf(option);
+      var index = this.valueKeys.indexOf(this.getOptionValue(option));
       this.internalValue.splice(index, 1);
       this.$emit('input', this.getValue(), this.id);
       this.$emit('remove', utils_deepClone(option), this.id);
@@ -4488,12 +4481,12 @@ var flow = function flow() {
      * Sets this.internalValue to []
      */
     removeAll: function removeAll() {
-      var _this7 = this;
+      var _this6 = this;
 
       var vals = utils_deepClone(this.internalValue);
       this.internalValue = [];
       vals.forEach(function (v) {
-        _this7.$emit('remove', utils_deepClone(v), _this7.id);
+        _this6.$emit('remove', utils_deepClone(v), _this6.id);
       });
       this.$emit('input', this.getValue(), this.id);
       if (this.closeOnSelect && !this.multiple) this.deactivate();
@@ -4504,14 +4497,14 @@ var flow = function flow() {
      * Sets this.isOpen to TRUE
      */
     activate: function activate() {
-      var _this8 = this;
+      var _this7 = this;
 
       /* istanbul ignore else */
       if (this.isOpen || this.disabled) return;
       this.adjustPosition();
-      var lastValId = (this.internalValue[this.internalValue.length - 1] || {})[this.trackBy];
+      var lastValId = this.getOptionValue(this.internalValue[this.internalValue.length - 1]);
       var lsIndex = this.filteredOptions.findIndex(function (v) {
-        return v[_this8.trackBy] === lastValId;
+        return _this7.getOptionValue(v) === lastValId;
       });
       this.pointer = Math.max(0, lsIndex);
       /* istanbul ignore else  */

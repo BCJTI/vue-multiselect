@@ -1,4 +1,4 @@
-import { deepClone, isObject } from './utils';
+import { deepClone } from './utils';
 
 function isEmpty(opt) {
 	if (opt === 0) return false;
@@ -375,10 +375,7 @@ export default {
 			return items;
 		},
 		valueKeys() {
-			if (this.trackBy) {
-				return this.internalValue.map(element => element[this.trackBy]);
-			}
-			return this.internalValue;
+			return this.internalValue.map(this.getOptionValue);
 		},
 		optionKeys() {
 			const options = this.groupValues ? this.flatAndStrip(this.options) : this.options;
@@ -473,7 +470,6 @@ export default {
 				// if (this.isAbove) {
 				// 	listWrapper.classList.add('above');
 				// 	listWrapper.style.top = 'auto';
-				// 	console.log(this.searchable);
 				// 	listWrapper.style.bottom = this.searchable
 				// 		? `${window.innerHeight - top + height}px`
 				// 		: `${window.innerHeight - top}px`;
@@ -540,13 +536,11 @@ export default {
 		 * @returns {Object||Array||String||Integer} returns the external value
 		 */
 		getValue() {
-			return this.multiple
-				? deepClone(this.internalValue)
-				: this.internalValue.length === 0
-					? null
-					: deepClone(Object.prototype.hasOwnProperty.call(this.internalValue[0], this.trackBy)
-						? this.internalValue[0][this.trackBy]
-						: this.internalValue[0]);
+			return deepClone(
+				this.multiple
+					? this.internalValue.map(this.getOptionValue)
+					: this.getOptionValue(this.internalValue[0]) || null,
+			);
 		},
 
 		/**
@@ -558,7 +552,7 @@ export default {
 				? []
 				: deepClone(
 					defaultVal instanceof Array
-						? defaultVal.map(v => this.transformLocalValue(v, v))
+						? defaultVal.map(v => this.transformLocalValue(value, v))
 						: [this.transformLocalValue(value, defaultVal)],
 				);
 		},
@@ -570,16 +564,7 @@ export default {
 		 */
 		transformLocalValue(value, defaultVal) {
 			return (this.options || [])
-				.find((item) => {
-					if (item === value
-						|| (isObject(value) && isObject(item) && value[this.trackBy] === item[this.trackBy])
-						|| (isObject(item) && value === item[this.trackBy])
-					) {
-						return true;
-					}
-
-					return false;
-				})
+				.find(item => this.getOptionValue(item) === this.getOptionValue(value))
 				|| defaultVal
 				|| { [this.trackBy]: '', [this.label]: '' };
 		},
@@ -625,9 +610,7 @@ export default {
 		 * @returns {Boolean} returns true if element is selected
 		 */
 		isSelected(option) {
-			const opt = this.trackBy
-				? option[this.trackBy]
-				: option;
+			const opt = this.getOptionValue(option);
 			return this.valueKeys.indexOf(opt) > -1;
 		},
 		/**
@@ -649,7 +632,10 @@ export default {
 		 */
 		getOptionLabel(option) {
 			/* istanbul ignore else */
-			if (isEmpty(option)) return '';
+			if (isEmpty(option)) {
+				if (!this.trackBy) return this.deselectLabelText;
+				return '';
+			}
 			/* istanbul ignore else */
 			if (option.isTag) return option.label;
 			/* istanbul ignore else */
@@ -660,6 +646,13 @@ export default {
 			if (isEmpty(label)) return '';
 			return label;
 		},
+
+		getOptionValue(option) {
+			return this.trackBy && Object.prototype.hasOwnProperty.call(option || {}, this.trackBy)
+				? option[this.trackBy]
+				: option;
+		},
+
 		/**
 		 * Add the given option to the list of selected options
 		 * or sets the option as the selected option.
@@ -685,7 +678,7 @@ export default {
 			/* istanbul ignore else */
 			if (key === 'Tab' && !this.pointerDirty) return;
 			if (option.isTag) {
-				this.$emit('tag', option.label, this.id);
+				this.$emit('tag', this.getOptionLabel(option), this.id);
 				this.search = '';
 				if (this.closeOnSelect && !this.multiple) this.deactivate();
 			} else {
@@ -721,9 +714,7 @@ export default {
 				return;
 			}
 
-			const index = typeof option === 'object'
-				? this.valueKeys.indexOf(option[this.trackBy])
-				: this.valueKeys.indexOf(option);
+			const index = this.valueKeys.indexOf(this.getOptionValue(option));
 
 			this.internalValue.splice(index, 1);
 			this.$emit('input', this.getValue(), this.id);
@@ -771,8 +762,8 @@ export default {
 
 			this.adjustPosition();
 
-			const lastValId = (this.internalValue[this.internalValue.length - 1] || {})[this.trackBy];
-			const lsIndex = this.filteredOptions.findIndex(v => v[this.trackBy] === lastValId);
+			const lastValId = this.getOptionValue(this.internalValue[this.internalValue.length - 1]);
+			const lsIndex = this.filteredOptions.findIndex(v => this.getOptionValue(v) === lastValId);
 			this.pointer = Math.max(0, lsIndex);
 
 			/* istanbul ignore else  */
