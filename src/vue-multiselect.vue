@@ -9,6 +9,7 @@
 			@keydown.space.enter.prevent="activate()"
 			@keydown.self.down.prevent="pointerForward()"
 			@keydown.self.up.prevent="pointerBackward()"
+			@focus="$emit('focus', $event)"
 			class="multiselect"
 	>
 		<!--
